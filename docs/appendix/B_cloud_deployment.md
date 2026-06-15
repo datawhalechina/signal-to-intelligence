@@ -26,8 +26,8 @@
 
 ```python
 # 克隆仓库
-!git clone https://github.com/lynnyulinlin-debug/signal-to-intelligence.git
-%cd signals-to-intelligence
+!git clone https://github.com/datawhalechina/signal-to-intelligence.git
+%cd signal-to-intelligence
 
 # 安装依赖
 !pip install -e . -q
@@ -40,8 +40,8 @@
 
 ```python
 # Cell 1: 环境设置
-!git clone https://github.com/lynnyulinlin-debug/signal-to-intelligence.git
-%cd signals-to-intelligence
+!git clone https://github.com/datawhalechina/signal-to-intelligence.git
+%cd signal-to-intelligence
 !pip install -e . -q
 
 # Cell 2: 运行实验
@@ -80,8 +80,8 @@ display(Image('assets/ch01_fft_spectrum.png'))
 
 ```python
 # 克隆仓库
-!git clone https://github.com/lynnyulinlin-debug/signal-to-intelligence.git
-%cd signals-to-intelligence
+!git clone https://github.com/datawhalechina/signal-to-intelligence.git
+%cd signal-to-intelligence
 
 # 安装依赖
 !pip install -e . -q
@@ -192,8 +192,8 @@ drive.mount('/content/drive')
 
 ```python
 # Cell 1: 初始化
-!git clone https://github.com/lynnyulinlin-debug/signal-to-intelligence.git
-%cd signals-to-intelligence
+!git clone https://github.com/datawhalechina/signal-to-intelligence.git
+%cd signal-to-intelligence
 !pip install -e ".[llm]" -q
 
 # Cell 2: 设置 API（如果用 API）

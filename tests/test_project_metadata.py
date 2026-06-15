@@ -12,7 +12,7 @@ except ModuleNotFoundError:  # pragma: no cover - Python 3.10 compatibility
 ROOT = Path(__file__).resolve().parents[1]
 STALE_LINK_PATTERNS = (
     "github.com/your-repo",
-    "github.com/yulinlin0/signal-to-intelligence",
+    "github.com/lynn_jingjing/signal-to-intelligence",
 )
 
 

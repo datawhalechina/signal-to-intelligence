@@ -40,7 +40,7 @@ pip install --upgrade pip setuptools wheel
 **B. venv（标准 Python）**
 ```bash
 git clone <repo-url>
-cd signals-to-intelligence
+cd signal-to-intelligence
 python3 -m venv venv
 source venv/bin/activate      # Linux/macOS
 # venv\Scripts\Activate.ps1   # Windows
@@ -63,7 +63,7 @@ pytest tests/ -v
 
 ## 接下来
 
-- 📖 **开始学习** → [项目 README](https://github.com/lynnyulinlin-debug/signal-to-intelligence/blob/main/README.md)
+- 📖 **开始学习** → [项目 README](https://github.com/datawhalechina/signal-to-intelligence/blob/main/README.md)
 - 🧪 **运行实验** → [代码运行指南](C_code_guide.md)
 - ❓ **遇到问题** → [常见问题](#常见问题) / [完整导航](INDEX.md)
 

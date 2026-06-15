@@ -182,10 +182,10 @@
 
 ## 🔗 其他资源
 
-- **主项目 README** → [README.md](https://github.com/lynnyulinlin-debug/signal-to-intelligence/blob/main/README.md)
+- **主项目 README** → [README.md](https://github.com/datawhalechina/signal-to-intelligence/blob/main/README.md)
 - **完整教程** → [docs/](../) 目录
-- **代码** → [code/](https://github.com/lynnyulinlin-debug/signal-to-intelligence/tree/main/code) 目录
-- **测试** → [tests/](https://github.com/lynnyulinlin-debug/signal-to-intelligence/tree/main/tests) 目录
+- **代码** → [code/](https://github.com/datawhalechina/signal-to-intelligence/tree/main/code) 目录
+- **测试** → [tests/](https://github.com/datawhalechina/signal-to-intelligence/tree/main/tests) 目录
 
 ---
 
@@ -206,8 +206,8 @@
 ## 📞 获取帮助
 
 - 遇到问题？先查看对应文档的"常见问题"部分
-- 提交 Bug → [GitHub Issue](https://github.com/lynnyulinlin-debug/signal-to-intelligence/issues)
-- 改进建议 → [GitHub Discussions](https://github.com/lynnyulinlin-debug/signal-to-intelligence/discussions)
+- 提交 Bug → [GitHub Issue](https://github.com/datawhalechina/signal-to-intelligence/issues)
+- 改进建议 → [GitHub Discussions](https://github.com/datawhalechina/signal-to-intelligence/discussions)
 
 ---
 
