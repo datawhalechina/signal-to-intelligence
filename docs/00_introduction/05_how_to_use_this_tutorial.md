@@ -121,14 +121,14 @@ Notebook 通过 `notebooks/project.py` 加载 `code/` 下的脚本，避免一�
 
 | 章节 | Notebook 文件 | Colab 入口 |
 |------|--------------|-----------|
-| 第1章 | `notebooks/ch01_dsp_interactive.ipynb` | [打开](https://colab.research.google.com/github/lynnyulinlin-debug/signal-to-intelligence/blob/main/notebooks/ch01_dsp_interactive.ipynb) |
-| 第2章 | `notebooks/ch02_optimization_interactive.ipynb` | [打开](https://colab.research.google.com/github/lynnyulinlin-debug/signal-to-intelligence/blob/main/notebooks/ch02_optimization_interactive.ipynb) |
-| 第3章 | `notebooks/ch03_deep_learning_interactive.ipynb` | [打开](https://colab.research.google.com/github/lynnyulinlin-debug/signal-to-intelligence/blob/main/notebooks/ch03_deep_learning_interactive.ipynb) |
-| 第4章 | `notebooks/ch04_transformer_interactive.ipynb` | [打开](https://colab.research.google.com/github/lynnyulinlin-debug/signal-to-intelligence/blob/main/notebooks/ch04_transformer_interactive.ipynb) |
-| 第5章 | `notebooks/ch05_llm_interactive.ipynb` | [打开](https://colab.research.google.com/github/lynnyulinlin-debug/signal-to-intelligence/blob/main/notebooks/ch05_llm_interactive.ipynb) |
-| 第6章 | `notebooks/ch06_llm_applications_interactive.ipynb` | [打开](https://colab.research.google.com/github/lynnyulinlin-debug/signal-to-intelligence/blob/main/notebooks/ch06_llm_applications_interactive.ipynb) |
-| 第7章 | `notebooks/ch07_multimodal_interactive.ipynb` | [打开](https://colab.research.google.com/github/lynnyulinlin-debug/signal-to-intelligence/blob/main/notebooks/ch07_multimodal_interactive.ipynb) |
-| 第8章 | `notebooks/ch08_engineering_interactive.ipynb` | [打开](https://colab.research.google.com/github/lynnyulinlin-debug/signal-to-intelligence/blob/main/notebooks/ch08_engineering_interactive.ipynb) |
+| 第1章 | `notebooks/ch01_dsp_interactive.ipynb` | [打开](https://colab.research.google.com/github/datawhalechina/signal-to-intelligence/blob/main/notebooks/ch01_dsp_interactive.ipynb) |
+| 第2章 | `notebooks/ch02_optimization_interactive.ipynb` | [打开](https://colab.research.google.com/github/datawhalechina/signal-to-intelligence/blob/main/notebooks/ch02_optimization_interactive.ipynb) |
+| 第3章 | `notebooks/ch03_deep_learning_interactive.ipynb` | [打开](https://colab.research.google.com/github/datawhalechina/signal-to-intelligence/blob/main/notebooks/ch03_deep_learning_interactive.ipynb) |
+| 第4章 | `notebooks/ch04_transformer_interactive.ipynb` | [打开](https://colab.research.google.com/github/datawhalechina/signal-to-intelligence/blob/main/notebooks/ch04_transformer_interactive.ipynb) |
+| 第5章 | `notebooks/ch05_llm_interactive.ipynb` | [打开](https://colab.research.google.com/github/datawhalechina/signal-to-intelligence/blob/main/notebooks/ch05_llm_interactive.ipynb) |
+| 第6章 | `notebooks/ch06_llm_applications_interactive.ipynb` | [打开](https://colab.research.google.com/github/datawhalechina/signal-to-intelligence/blob/main/notebooks/ch06_llm_applications_interactive.ipynb) |
+| 第7章 | `notebooks/ch07_multimodal_interactive.ipynb` | [打开](https://colab.research.google.com/github/datawhalechina/signal-to-intelligence/blob/main/notebooks/ch07_multimodal_interactive.ipynb) |
+| 第8章 | `notebooks/ch08_engineering_interactive.ipynb` | [打开](https://colab.research.google.com/github/datawhalechina/signal-to-intelligence/blob/main/notebooks/ch08_engineering_interactive.ipynb) |
 
 ---
 

@@ -62,7 +62,7 @@ python code/ch01_dsp/fft_spectrum.py   # 验证安装
 | `pyproject.toml` | 依赖单点维护：核心依赖 + 可选依赖组（`pip install -e ".[llm]"` 等） |
 | `Makefile` | 常用命令快捷方式，`make help` 查看所有命令 |
 | `.env.example` | API Key 模板，复制为 `.env` 后填入密钥 |
-| `deploy/` | Docker Compose 配置（CPU 版 + GPU 版），见 [deploy/README.md](https://github.com/lynnyulinlin-debug/signal-to-intelligence/blob/main/deploy/README.md) |
+| `deploy/` | Docker Compose 配置（CPU 版 + GPU 版），见 [deploy/README.md](https://github.com/datawhalechina/signal-to-intelligence/blob/main/deploy/README.md) |
 | `code/` | 所有可运行代码实验，按章节分目录 |
 | `docs/` | 教程文档，按章节分目录，每章含 `extensions/` 扩展内容 |
 | `assets/` | 代码实验生成的图表（由脚本自动生成，不手动编辑） |

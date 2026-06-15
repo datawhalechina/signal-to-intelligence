@@ -17,7 +17,8 @@
 
 **受众：** 具有理工科背景，学过 DSP / 控制 / 通信 / 机器学习基础，想快速理解 LLM 本质的工程师。
 
-[GitHub 仓库](https://github.com/lynnyulinlin-debug/signal-to-intelligence)
+[📖 **在线文档：** https://datawhalechina.github.io/signal-to-intelligence/](https://datawhalechina.github.io/signal-to-intelligence/)
+[🔗 **GitHub 仓库：** https://github.com/datawhalechina/signal-to-intelligence](https://github.com/datawhalechina/signal-to-intelligence)
 
 ## 最近更新
 
@@ -36,10 +37,10 @@
 
 | 序号 | 方式 | 适合场景 | 主要入口 | 说明 |
 |-------|----------|----------|------|------|
-| A | 在线阅读 VitePress | 系统学习正文 | [在线网页](https://lynnyulinlin-debug.github.io/signal-to-intelligence) | 阅读指南见 [如何使用本教程](docs/00_introduction/05_how_to_use_this_tutorial.md) |
+| A | 在线阅读 VitePress | 系统学习正文 | [在线网页](https://datawhalechina.github.io/signal-to-intelligence/) | 阅读指南见 [如何使用本教程](docs/00_introduction/05_how_to_use_this_tutorial.md) |
 | B.1 | Google Colab Notebook | 云端交互实验 | [Notebook 使用方式](docs/00_introduction/05_how_to_use_this_tutorial.md) | Notebook 的一种云端入口，交互逻辑统一复用 `code/` |
 | B.2 | ModelScope Notebook（待补充） | 云端交互实验 | 待补充 | 目前暂无直达链接，先阅读 [Notebook 使用方式](docs/00_introduction/05_how_to_use_this_tutorial.md) |
-| C.1 | 本地运行代码 | 环境安装、跑实验、改脚本 | [源码仓库 code/](https://github.com/lynnyulinlin-debug/signal-to-intelligence/tree/main/code) | 运行说明见 [附录 C：代码运行指南](docs/appendix/C_code_guide.md)，代码以 `code/` 为准 |
+| C.1 | 本地运行代码 | 环境安装、跑实验、改脚本 | [源码仓库 code/](https://github.com/datawhalechina/signal-to-intelligence/tree/main/code) | 运行说明见 [附录 C：代码运行指南](docs/appendix/C_code_guide.md)，代码以 `code/` 为准 |
 | C.2 | Docker 本地环境 | 本地算力 + 统一容器环境 | [附录 B：环境配置](docs/appendix/B_environment_setup.md) | 适合在本机复现一致运行环境 |
 | D.1 | Docker 云端环境 | 云端算力 + 统一容器环境 | [附录 B：环境配置](docs/appendix/B_environment_setup.md) | 适合在云端机器上运行容器化实验 |
 | D.2 | CNB 云端环境 | 云端算力 + 云端环境 | [附录 B：环境配置](docs/appendix/B_environment_setup.md) | 独立云端平台，不等同于 Docker |

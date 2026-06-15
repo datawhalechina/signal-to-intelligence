@@ -2,7 +2,7 @@ import { defineConfig } from 'vitepress'
 
 const isEdgeOne = process.env.EDGEONE === '1'
 const baseConfig = isEdgeOne ? '/' : '/signal-to-intelligence/'
-const githubRepo = 'https://github.com/lynnyulinlin-debug/signal-to-intelligence'
+const githubRepo = 'https://github.com/datawhalechina/signal-to-intelligence'
 const githubCodeBase = `${githubRepo}/blob/main/code/`
 const notebookMap: Record<string, string> = {
   '01_dsp': 'ch01_dsp_interactive.ipynb',
@@ -38,7 +38,7 @@ export default defineConfig({
         const notebookBlock = `
 <section class="notebook-entry">
 <p class="notebook-entry-title">在线 Notebook</p>
-<p>对应的交互式版本可在 <a href="https://colab.research.google.com/github/lynnyulinlin-debug/signal-to-intelligence/blob/main/notebooks/${notebookFile}">Google Colab</a> 打开，统一使用方式见 <a href="/signal-to-intelligence/00_introduction/05_how_to_use_this_tutorial.html">第0章说明</a>。</p>
+        <p>对应的交互式版本可在 <a href="https://colab.research.google.com/github/datawhalechina/signal-to-intelligence/blob/main/notebooks/${notebookFile}">Google Colab</a> 打开，统一使用方式见 <a href="/signal-to-intelligence/00_introduction/05_how_to_use_this_tutorial.html">第0章说明</a>。</p>
 </section>
 `
 
@@ -93,7 +93,7 @@ export default defineConfig({
   themeConfig: {
     logo: '/datawhale-logo.png',
     nav: [
-      { text: '代码库', link: 'https://github.com/lynnyulinlin-debug/signal-to-intelligence' },
+      { text: '代码库', link: 'https://github.com/datawhalechina/signal-to-intelligence' },
     ],
     search: {
       provider: 'local',
@@ -301,11 +301,11 @@ export default defineConfig({
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/lynnyulinlin-debug/signal-to-intelligence' }
+      { icon: 'github', link: 'https://github.com/datawhalechina/signal-to-intelligence' }
     ],
 
     editLink: {
-      pattern: 'https://github.com/lynnyulinlin-debug/signal-to-intelligence/blob/main/docs/:path'
+      pattern: 'https://github.com/datawhalechina/signal-to-intelligence/blob/main/docs/:path'
     },
 
     footer: {

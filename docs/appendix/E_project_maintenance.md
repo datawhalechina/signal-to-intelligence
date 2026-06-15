@@ -223,7 +223,7 @@ if not Path("notebooks/bootstrap.py").exists():
     root = Path("/content/signal-to-intelligence")
     if not root.exists():
         subprocess.run(
-            ["git", "clone", "https://github.com/lynnyulinlin-debug/signal-to-intelligence.git", str(root)],
+            ["git", "clone", "https://github.com/datawhalechina/signal-to-intelligence.git", str(root)],
             check=True,
         )
     os.chdir(root)

@@ -76,10 +76,10 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://lynnyulinlin-debug.github.io/signal-to-intelligence"
-Documentation = "https://lynnyulinlin-debug.github.io/signal-to-intelligence"
-Repository = "https://github.com/lynnyulinlin-debug/signal-to-intelligence"
-Issues = "https://github.com/lynnyulinlin-debug/signal-to-intelligence/issues"
+Homepage = "https://datawhalechina.github.io/signal-to-intelligence/"
+Documentation = "https://datawhalechina.github.io/signal-to-intelligence/"
+Repository = "https://github.com/datawhalechina/signal-to-intelligence"
+Issues = "https://github.com/datawhalechina/signal-to-intelligence/issues"
 
 [tool.setuptools]
 packages = ["code", "tests"]

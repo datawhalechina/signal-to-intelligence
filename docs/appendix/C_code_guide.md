@@ -512,4 +512,4 @@ python -c "import os; print(os.environ.get('OPENAI_API_KEY'))"
 ## 获取帮助
 
 - 环境配置问题：[附录B](B_environment_setup.md)
-- 提交 Bug：[GitHub Issue](https://github.com/lynnyulinlin-debug/signal-to-intelligence/issues)
+- 提交 Bug：[GitHub Issue](https://github.com/datawhalechina/signal-to-intelligence/issues)
