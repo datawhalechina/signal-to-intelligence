@@ -39,20 +39,30 @@ $$(\mathbf{A}\mathbf{B})_{ij} = \sum_k A_{ik} B_{kj}$$
 $$\mathbf{x}^T \mathbf{y} = \sum_i x_i y_i$$
 
 **矩阵范数（Frobenius范数）：**
-$$\|\mathbf{A}\|_F = \sqrt{\sum_{i,j} A_{ij}^2}$$
+$$\|\mathbf{A}\|_F = \sqrt{\sum_{i,j} |A_{ij}|^2}$$
 
 **向量范数（L2范数）：**
-$$\|\mathbf{x}\|_2 = \sqrt{\sum_i x_i^2}$$
+$$\|\mathbf{x}\|_2 = \sqrt{\sum_i |x_i|^2}$$
 
 ### 矩阵求导
 
-**标量对向量求导：**
-$$\frac{\partial}{\partial \mathbf{x}} (\mathbf{a}^T \mathbf{x}) = \mathbf{a}$$
+以下公式采用列向量梯度，并假设变量为实数。
 
-$$\frac{\partial}{\partial \mathbf{x}} (\mathbf{x}^T \mathbf{A} \mathbf{x}) = (\mathbf{A} + \mathbf{A}^T) \mathbf{x}$$
+**标量对向量求导：**
+$$\nabla_{\mathbf{x}} (\mathbf{a}^{\mathsf T} \mathbf{x}) = \mathbf{a}$$
+
+$$\nabla_{\mathbf{x}} (\mathbf{x}^{\mathsf T} \mathbf{A} \mathbf{x}) = (\mathbf{A} + \mathbf{A}^{\mathsf T}) \mathbf{x}$$
 
 **链式法则：**
-$$\frac{\partial L}{\partial \mathbf{x}} = \frac{\partial L}{\partial \mathbf{y}} \frac{\partial \mathbf{y}}{\partial \mathbf{x}}$$
+若 $\mathbf{x}\in\mathbb{R}^n$、$\mathbf{y}=f(\mathbf{x})\in\mathbb{R}^m$，且 $L$ 是标量，则
+
+$$
+\nabla_{\mathbf{x}}L
+=\mathbf{J}_{\mathbf{y}\leftarrow\mathbf{x}}^{\mathsf T}\nabla_{\mathbf{y}}L,
+\qquad
+[\mathbf{J}_{\mathbf{y}\leftarrow\mathbf{x}}]_{ij}
+=\frac{\partial y_i}{\partial x_j}.
+$$
 
 ---
 
@@ -71,14 +81,14 @@ $$p(\mathbf{x}) = \frac{1}{(2\pi)^{n/2}|\mathbf{\Sigma}|^{1/2}} \exp\left(-\frac
 ### 期望和方差
 
 **期望：**
-$$E[X] = \sum_x x \cdot p(x) \quad \text{（离散）}$$
-$$E[X] = \int x \cdot p(x) dx \quad \text{（连续）}$$
+$$\mathbb{E}[X] = \sum_x x\,p(x) \quad \text{（离散）}$$
+$$\mathbb{E}[X] = \int x\,p(x)\,dx \quad \text{（连续）}$$
 
 **方差：**
-$$\text{Var}(X) = E[(X - E[X])^2] = E[X^2] - (E[X])^2$$
+$$\operatorname{Var}(X) = \mathbb{E}[(X - \mathbb{E}[X])^2] = \mathbb{E}[X^2] - (\mathbb{E}[X])^2$$
 
 **协方差：**
-$$\text{Cov}(X, Y) = E[(X - E[X])(Y - E[Y])]$$
+$$\operatorname{Cov}(X, Y) = \mathbb{E}[(X - \mathbb{E}[X])(Y - \mathbb{E}[Y])]$$
 
 ### 常用分布
 
@@ -104,7 +114,7 @@ $$z = a + jb$$
 **极坐标形式：**
 $$z = r e^{j\theta} = r(\cos\theta + j\sin\theta)$$
 
-其中 $r = |z| = \sqrt{a^2 + b^2}$ 是模，$\theta = \arctan(b/a)$ 是幅角。
+其中 $r = |z| = \sqrt{a^2 + b^2}$ 是模，$\theta = \operatorname{atan2}(b,a)$ 是幅角。使用双参数函数可以保留象限信息，并处理 $a=0$ 的情况。
 
 ### 运算
 
@@ -181,9 +191,12 @@ $$L_{\text{reg}} = L + \lambda \sum_i w_i^2$$
 $$\mathbf{w}_{t+1} = \mathbf{w}_t - \alpha \nabla L(\mathbf{w}_t)$$
 
 **Adam：**
-$$m_t = \beta_1 m_{t-1} + (1-\beta_1) \nabla L(\mathbf{w}_t)$$
-$$v_t = \beta_2 v_{t-1} + (1-\beta_2) (\nabla L(\mathbf{w}_t))^2$$
-$$\mathbf{w}_{t+1} = \mathbf{w}_t - \alpha \frac{m_t}{\sqrt{v_t} + \epsilon}$$
+令 $\mathbf{g}_t=\nabla L(\mathbf{w}_t)$，平方、除法和开方均按元素计算：
+
+$$\mathbf{m}_t = \beta_1 \mathbf{m}_{t-1} + (1-\beta_1) \mathbf{g}_t$$
+$$\mathbf{v}_t = \beta_2 \mathbf{v}_{t-1} + (1-\beta_2) \mathbf{g}_t^{\odot 2}$$
+$$\widehat{\mathbf{m}}_t = \frac{\mathbf{m}_t}{1-\beta_1^t}, \qquad \widehat{\mathbf{v}}_t = \frac{\mathbf{v}_t}{1-\beta_2^t}$$
+$$\mathbf{w}_{t+1} = \mathbf{w}_t - \alpha \frac{\widehat{\mathbf{m}}_t}{\sqrt{\widehat{\mathbf{v}}_t} + \epsilon}$$
 
 ---
 
@@ -194,7 +207,7 @@ $$\mathbf{w}_{t+1} = \mathbf{w}_t - \alpha \frac{m_t}{\sqrt{v_t} + \epsilon}$$
 | ReLU | $\max(0, x)$ | $\mathbb{1}_{x>0}$ | 隐层 |
 | Sigmoid | $\frac{1}{1+e^{-x}}$ | $\sigma(x)(1-\sigma(x))$ | 二分类输出 |
 | Tanh | $\frac{e^x - e^{-x}}{e^x + e^{-x}}$ | $1 - \tanh^2(x)$ | RNN隐层 |
-| Softmax | $\frac{e^{x_i}}{\sum_j e^{x_j}}$ | $\text{diag}(p) - pp^T$ | 多分类输出 |
+| Softmax | $p_i=\frac{e^{x_i}}{\sum_j e^{x_j}}$ | $\frac{\partial p_i}{\partial x_j}=p_i(\delta_{ij}-p_j)$ | 多分类输出 |
 
 ---
 

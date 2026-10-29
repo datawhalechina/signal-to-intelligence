@@ -38,10 +38,10 @@
 
 | 概念 | 公式/条件 | 应用 |
 |------|----------|------|
-| 浮点精度 | $\text{computed} = \text{true} \times (1 + \epsilon)$ | 数值稳定性 |
+| 浮点误差模型 | $\operatorname{fl}(x)=x(1+\delta),\ |\delta|\leq\epsilon$ | 数值稳定性；需满足正常舍入且不发生上溢/下溢 |
 | 条件数 | $\kappa(\mathbf{A}) = \|\mathbf{A}\| \cdot \|\mathbf{A}^{-1}\|$ | 问题难度 |
 | 有限差分 | $\frac{\partial f}{\partial x} \approx \frac{f(x+h) - f(x-h)}{2h}$ | 梯度检查 |
-| 最优步长 | $h \approx \sqrt{\epsilon}$ | 数值梯度 |
+| 中心差分步长量级 | $h \sim \epsilon^{1/3}$ | 平衡 $O(h^2)$ 截断误差与 $O(\epsilon/h)$ 舍入误差；实际值还依赖变量和函数尺度 |
 | 梯度消失 | $\frac{\partial L}{\partial w_1} = \prod_i \frac{\partial}{\partial w_i} \ll 1$ | 深层网络 |
 
 **关键应用：** 理解为什么某些优化算法会失败，如何确保数值稳定性。详见第2章 [`04_numerical_methods.md`](../02_optimization/04_numerical_methods.md)。
@@ -56,7 +56,7 @@
 | 邻接矩阵 | $A_{ij} = w_{ij}$ if $(i,j) \in E$ | 图表示 |
 | 度 | $d_i = \sum_j A_{ij}$ | 节点连接数 |
 | 拉普拉斯矩阵 | $\mathbf{L} = \mathbf{D} - \mathbf{A}$ | 图谱分析 |
-| 注意力权重 | $\alpha_{ij} = \text{softmax}(Q_i K_j^T / \sqrt{d_k})$ | Transformer 中的图 |
+| 注意力权重 | $\alpha_{ij} = \operatorname{softmax}_j(\mathbf{q}_i^{\mathsf T}\mathbf{k}_j / \sqrt{d_k})$ | 对固定查询 $i$ 沿键位置 $j$ 归一化 |
 
 **关键应用：** 注意力机制本质上是图上的全连接消息传递。深度阅读 → [第4章扩展：图论基础](../04_transformer/extensions/graph_theory_basics.md)。
 
@@ -84,7 +84,7 @@
 | 交叉熵 | $H(P,Q) = -\sum_x P(x) \log Q(x)$ | LLM 损失函数 |
 | KL 散度 | $D_{KL}(P\|Q) = \sum_x P(x) \log \frac{P(x)}{Q(x)}$ | 分布差异 |
 | 互信息 | $I(X;Y) = H(X) - H(X|Y)$ | 变量依赖 |
-| 困惑度 | $\text{PPL} = e^{H(P,Q)}$ | 语言模型评估 |
+| 困惑度 | $\operatorname{PPL}=\exp(H(P,Q))$ | 交叉熵使用自然对数时；若使用以 2 为底的对数则为 $2^{H(P,Q)}$ |
 
 **关键应用：** 理解 LLM 的训练目标（最小化交叉熵）和评估指标（困惑度）。深度阅读 → [第5章扩展：信息论基础](../05_llm_basics/extensions/information_theory_basics.md)。
 
@@ -97,10 +97,10 @@
 | 凸集 | $\lambda \mathbf{x} + (1-\lambda) \mathbf{y} \in C$ | 可行域 |
 | 凸函数 | $f(\lambda \mathbf{x} + (1-\lambda) \mathbf{y}) \leq \lambda f(\mathbf{x}) + (1-\lambda) f(\mathbf{y})$ | 优化问题 |
 | Hessian 半正定 | $\nabla^2 f(\mathbf{x}) \succeq 0$ | 凸性判断 |
-| 凸优化 | 最小化凸函数在凸集上 | 保证全局最优 |
-| 非凸优化 | 深度学习中的优化 | 局部最优解 |
+| 凸优化 | 在凸集上最小化凸函数 | 满足凸性条件时，任一局部最优也是全局最优；解仍可能不存在或不唯一 |
+| 非凸优化 | 目标函数或可行域不满足凸性 | 通常缺少通用的全局最优保证，但仍可能存在全局最优解 |
 
-**关键应用：** 理解为什么 SVM 有全局最优解而深度网络没有。深度阅读 → [第2章扩展：凸分析基础](../02_optimization/extensions/convex_analysis.md)。
+**关键应用：** 理解为什么标准凸 SVM 训练有全局最优性质，而深度网络训练通常不能获得同样的通用保证。深度阅读 → [第2章扩展：凸分析基础](../02_optimization/extensions/convex_analysis.md)。
 
 ---
 
@@ -108,8 +108,8 @@
 
 | 概念 | 定义/公式 | 应用 |
 |------|----------|------|
-| 平稳过程 | $E[X(t)] = \mu$, $R(t_1, t_2) = R(\tau)$ | 时间序列 |
-| 马尔可夫链 | $P(X_{n+1}|X_n, \ldots) = P(X_{n+1}|X_n)$ | 序列模型 |
+| 宽平稳过程 | $\mathbb{E}[X(t)] = \mu$, $R_X(t_1,t_2)=R_X(t_1-t_2)$ | 只约束一、二阶统计量；不等同于严格平稳 |
+| 一阶马尔可夫链 | $P(X_{n+1}\mid X_n,\ldots,X_0)=P(X_{n+1}\mid X_n)$ | 给定当前状态后，下一状态与更早历史条件独立 |
 | 转移矩阵 | $P_{ij} = P(X_{n+1}=j|X_n=i)$ | 状态转移 |
 | AR(p) 模型 | $X_t = \sum_i \phi_i X_{t-i} + \epsilon_t$ | 时间序列预测 |
 | 自相关函数 | $\rho(\tau) = \frac{R(\tau) - \mu^2}{\sigma^2}$ | 相关结构 |
@@ -126,7 +126,7 @@
 | 卷积 | $y[n] = \sum_k x[k]h[n-k]$ | 系统输出 |
 | 频率响应 | $H(e^{j\omega}) = \sum_n h[n]e^{-j\omega n}$ | 频域特性 |
 | 传递函数 | $H(z) = B(z)/A(z)$ | 系统表示 |
-| 稳定性 | $|p_i| < 1$（所有极点） | 系统可用性 |
+| BIBO 稳定性 | $|p_i|<1$（所有极点） | 适用于因果有理离散时间 LTI 系统；等价条件是冲激响应绝对可和 |
 | 状态空间 | $\mathbf{x}[n+1] = \mathbf{A}\mathbf{x}[n] + \mathbf{B}\mathbf{u}[n]$ | 现代控制 |
 
 **关键应用：** 理解滤波器设计和系统稳定性，以及 RNN 状态空间与线性系统的对应关系。深度阅读 → [第1章扩展：线性系统理论](../01_dsp/extensions/linear_systems.md)。
@@ -182,9 +182,3 @@
 - SVM 为什么有全局最优解 → [D.6 凸分析基础](#d-6-凸分析基础)
 - 傅里叶变换为什么用复指数 → [D.1 复数基础](#d-1-复数基础)
 - 嵌入向量的相似度计算 → [D.4 向量空间基础](#d-4-向量空间基础)
-
----
-
-**版本历史：**
-- v1.1 (2026-06-02)：加目录、加 extensions 深度阅读链接、去掉重复符号速查、统一节编号
-- v1.0 (2026-05-27)：初始版本，包含 Plan B 和 Plan C 的数学基础
