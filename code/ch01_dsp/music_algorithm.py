@@ -218,42 +218,48 @@ plt.savefig('assets/ch01_matrix_decomposition.png', dpi=150, bbox_inches='tight'
 print('Figure saved to assets/ch01_matrix_decomposition.png')
 
 # ============================================================================
-# 8. Performance comparison
+# 8. Subspace diagnostics
 # ============================================================================
-print("\n8. Performance comparison")
+print("\n8. Subspace diagnostics")
 print("-" * 60)
 
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
-fft_spectrum = np.abs(np.fft.rfft(y))
-fft_freqs = np.fft.rfftfreq(N, d=1.0)
-fft_peak_idx = np.argsort(fft_spectrum)[-2:]
-fft_estimated_freqs = np.sort(fft_freqs[fft_peak_idx])
-fft_errors = np.abs(fft_estimated_freqs - np.array([f1, f2]))
-music_errors = np.abs(estimated_freqs - np.array([f1, f2]))
-
-methods = ['FFT', 'MUSIC']
-x = np.arange(len(methods))
-width = 0.35
-axes[0].bar(x - width / 2, [fft_errors[0], music_errors[0]], width, label='Frequency 1', alpha=0.8)
-axes[0].bar(x + width / 2, [fft_errors[1], music_errors[1]], width, label='Frequency 2', alpha=0.8)
-axes[0].set_ylabel('Frequency Estimation Error')
-axes[0].set_title('Frequency Estimation Accuracy')
-axes[0].set_xticks(x)
-axes[0].set_xticklabels(methods)
+normalized_eigenvalues = eigenvalues / eigenvalues[0]
+axes[0].semilogy(
+    range(1, 13), normalized_eigenvalues[:12], "o-", color="#2563eb", linewidth=2
+)
+axes[0].axvspan(0.5, subspace_dim + 0.5, color="#16a34a", alpha=0.12, label="Signal subspace")
+axes[0].axvspan(subspace_dim + 0.5, 12.5, color="#64748b", alpha=0.12, label="Noise subspace")
+axes[0].axvline(subspace_dim + 0.5, color="#dc2626", linestyle="--", linewidth=1.5)
+axes[0].set_xlabel("Eigenvalue index")
+axes[0].set_ylabel("Normalized eigenvalue")
+axes[0].set_title("Step 1: Split Signal and Noise Subspaces")
+axes[0].set_xlim(0.5, 12.5)
 axes[0].legend()
-axes[0].grid(True, alpha=0.3, axis='y')
+axes[0].grid(True, alpha=0.3, which="both")
 
-methods_denoise = ['Noisy', 'Denoised']
-mse_values = [mse_noisy, mse_denoised]
-axes[1].bar(methods_denoise, mse_values, color=['b', 'r'], alpha=0.7)
-axes[1].set_ylabel('MSE')
-axes[1].set_title('Denoising Performance')
-axes[1].grid(True, alpha=0.3, axis='y')
+axes[1].plot(freq_range, music_spectrum_db, color="#7c3aed", linewidth=1.5)
+axes[1].plot(
+    estimated_freqs,
+    music_spectrum_db[peak_indices],
+    "o",
+    color="#dc2626",
+    markersize=7,
+    label="Estimated peaks",
+)
+axes[1].axvline(f1, color="#16a34a", linestyle="--", linewidth=1.5, label="True frequencies")
+axes[1].axvline(f2, color="#16a34a", linestyle="--", linewidth=1.5)
+axes[1].set_xlabel("Normalized frequency")
+axes[1].set_ylabel("Relative pseudospectrum (dB)")
+axes[1].set_title("Step 2: Search Steering Vectors")
+axes[1].set_ylim(-55, 3)
+axes[1].legend()
+axes[1].grid(True, alpha=0.3)
 
 plt.tight_layout()
 plt.savefig('assets/ch01_matrix_decomposition_performance.png', dpi=150, bbox_inches='tight')
-print('Figure saved to assets/ch01_matrix_decomposition_performance.png')
+print('Diagnostic figure saved to assets/ch01_matrix_decomposition_performance.png')
 
 print("\n" + "=" * 60)
 print("Experiment completed!")

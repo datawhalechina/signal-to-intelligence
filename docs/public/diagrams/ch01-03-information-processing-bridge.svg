@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 500" role="img" aria-labelledby="title desc">
+<title id="title">从 DSP 到深度学习再到 Transformer 的信息处理演化</title><desc id="desc">信息处理从手工设计变换，发展到学习局部特征、递推状态和内容依赖的全局聚合。</desc>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;fill:#172033}.t{font-size:25px;font-weight:700}.n{font-size:20px;font-weight:700}.s{font-size:15px;fill:#526076}.a{stroke:#7b879d;stroke-width:3;fill:none;marker-end:url(#arrow)}</style><defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3z" fill="#7b879d"/></marker></defs>
+<rect width="1440" height="500" rx="24" fill="#f8fafc"/><text x="60" y="60" class="t">信息处理的演化：不是替代，而是扩大“表示与聚合”的可学习范围</text>
+<g transform="translate(60 150)"><rect width="240" height="180" rx="18" fill="#dbeafe"/><text x="24" y="43" class="n">DSP</text><text x="24" y="76" class="s">手工选择时域、频域、时频表示</text><text x="24" y="110" class="s">固定滤波器 / 相关器提取结构</text><text x="24" y="144" class="s">适合：先验明确、可解释任务</text></g>
+<g transform="translate(360 150)"><rect width="240" height="180" rx="18" fill="#e0e7ff"/><text x="24" y="43" class="n">CNN</text><text x="24" y="76" class="s">学习局部滤波器与层级特征</text><text x="24" y="110" class="s">局部感受野 + 参数共享</text><text x="24" y="144" class="s">适合：平移结构与视觉模式</text></g>
+<g transform="translate(660 150)"><rect width="240" height="180" rx="18" fill="#ede9fe"/><text x="24" y="43" class="n">RNN / 序列模型</text><text x="24" y="76" class="s">把历史压入递推状态</text><text x="24" y="110" class="s">顺序依赖，但难并行、易遗忘</text><text x="24" y="144" class="s">适合：流式与短中程时序</text></g>
+<g transform="translate(960 150)"><rect width="360" height="180" rx="18" fill="#ffedd5"/><text x="24" y="43" class="n">Transformer</text><text x="24" y="76" class="s">用内容依赖的注意力动态选择全局信息</text><text x="24" y="110" class="s">位置编码补顺序；Mask 规定信息方向</text><text x="24" y="144" class="s">适合：长依赖、并行训练与可扩展预训练</text></g>
+<path d="M301 240H351M601 240H651M901 240H951" class="a"/><path d="M180 396H1240" class="a"/><text x="60" y="438" class="n">始终不变的问题：</text><text x="245" y="438" class="s">如何表示信息？如何聚合相关部分？如何抑制无关成分？如何用目标和数据验证结果？</text>
+</svg>
