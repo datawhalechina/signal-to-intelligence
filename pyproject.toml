@@ -8,9 +8,10 @@ version = "3.2.0"
 description = "从数字信号处理到大语言模型的思想演化与代码实践"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = {text = "CC-BY-NC-SA-4.0"}
 authors = [
-    {name = "Claude", email = "noreply@anthropic.com"}
+    {name = "Datawhale"},
+    {name = "lynn_jingjing"},
 ]
 keywords = [
     "DSP",
@@ -25,7 +26,6 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Education",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -64,6 +64,17 @@ hf = [
     "accelerate>=0.30.0",
     "huggingface_hub>=0.23.0",
 ]
+vision = [
+    "numpy>=1.24.0,<2.0.0",
+    "opencv-python>=4.7.0,<4.12.0",
+    "pillow>=9.0.0",
+    "torch>=2.0.0",
+    "torchvision>=0.15.0",
+    "transformers>=4.40.0,<5.0.0",
+    "huggingface_hub>=0.23.0,<1.0.0",
+    "timm>=0.9.0,<2.0.0",
+    "ultralytics>=8.2.0,<9.0.0",
+]
 dev = [
     "black>=23.0.0",
     "flake8>=6.0.0",
@@ -72,7 +83,7 @@ dev = [
     "pytest-cov>=4.0.0",
 ]
 all = [
-    "signals-to-intelligence[llm,ml,rag,hf,dev]",
+    "signals-to-intelligence[llm,ml,rag,hf,vision,dev]",
 ]
 
 [project.urls]

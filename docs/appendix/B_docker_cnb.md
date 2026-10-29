@@ -1,6 +1,5 @@
 # 附录B：Docker 与 CNB 容器化部署指南
 
-**版本：** v1.0（2026-06-03）  
 **对标：** 第0章第4小节 — [工具链选择决策表](../00_introduction/04_tools_and_infrastructure.md#工具链选择决策表)
 
 ---
@@ -599,7 +598,3 @@ docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
 - Docker 官方文档：https://docs.docker.com
 - CNB 官方文档：https://buildpacks.io
 - Heroku 部署：https://devcenter.heroku.com
-
----
-
-**版本：** v1.0（2026-06-03）

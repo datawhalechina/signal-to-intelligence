@@ -34,7 +34,8 @@
 - 第 4 章解释 Transformer 为什么适合序列建模和大模型。
 - 第 5 章解释 LLM 如何通过数据、规模、预训练、微调和对齐形成能力。
 - 第 6 章解释 Prompt、微调、RAG 和 Agent 各自适合解决什么问题。
-- 第 7 章解释多模态系统中的视觉编码、跨模态对齐、融合和任务约束。
+- 第 7 章以视觉编码和图文对齐为主干，再推广到音频、振动和传感器等非视觉信号的表示、对齐与语言接口。
+- 第 8 章把端侧资源预算作为表示效率的联合验收条件，而不是独立的部署技巧。
 - 第 8 章解释模型如何上线，并在质量、成本、延迟和可靠性之间取舍。
 
 ### 主线与扩展
@@ -66,6 +67,7 @@
 | 项目版本、包信息、Python 依赖 | `pyproject.toml` | README、测试、安装命令 |
 | 文档站依赖和脚本命令 | `package.json` | README、附录 E |
 | 图片资产 | `assets/` | `docs/public/assets/` |
+| 章节主图与机制图 | `docs/public/diagrams/` | VitePress 静态资源 |
 | 教程正文 | `docs/` Markdown | VitePress 站点 |
 | Python 实验实现 | `code/` | `tests/`、`notebooks/`、文档说明 |
 | Notebook 交互演示 | `notebooks/` | 本地 Jupyter、云端 Notebook |
@@ -109,6 +111,8 @@ python scripts/sync_assets.py
 
 这样可以避免同一张图片在两个目录里手动维护。
 
+章节主图和机制图使用 SVG，直接维护在 `docs/public/diagrams/`，不参与 `assets/` 的自动同步。图的职责、命名、编号和可访问性要求见 [附录 F：图像与可视化规范](F_visual_guide.md)。
+
 ---
 
 ## 文档站命令
@@ -142,7 +146,7 @@ npm run docs:build
 在准备推送或合并前，建议按下面顺序检查：
 
 ```bash
-env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest tests/ -q
+make test
 npm run docs:build
 ```
 
@@ -191,7 +195,7 @@ npm run docs:build
 推荐验证命令：
 
 ```bash
-env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest tests/ -q
+make test
 ```
 
 其中 `PYTEST_DISABLE_PLUGIN_AUTOLOAD=1` 用于避免本机全局 pytest 插件影响本项目测试。
@@ -306,12 +310,13 @@ make help
 | `make install-hf` | 安装 Hugging Face 生态依赖 |
 | `make test` | 运行全部测试 |
 | `make test-cov` | 运行测试并生成覆盖率报告 |
+| `make lint-ch04` | 检查第 4 章代码结构试点与对应测试 |
 | `make run-exp-ch01` | 运行第 1 章主要离线实验 |
 | `make run-exp-ch02` | 运行第 2 章主要离线实验 |
 | `make run-exp-ch03` | 运行第 3 章主要离线实验 |
 | `make run-exp-ch04` | 运行第 4 章主要离线实验 |
 | `make run-exp-ch05` | 运行第 5 章离线实验 |
-| `make run-exp-ch06` | 运行第 6 章 RAG 演示 |
+| `make run-exp-ch06` | 运行第 6 章 Prompt、微调、RAG、Agent 与系统选型实验 |
 | `make run-exp-ch07` | 运行第 7 章轻量多模态实验 |
 | `make run-exp-ch08` | 运行第 8 章工程实践演示 |
 | `make run-all-exp` | 运行所有默认离线实验 |
@@ -335,6 +340,7 @@ make help
 | `data/` | 小型 fixture 和本地数据说明；大型数据不提交 |
 | `deploy/` | Docker Compose 配置（CPU 版 + GPU 版），见 [deploy/README.md](../../deploy/README.md) |
 | `code/` | 所有可运行代码实验，按章节分目录 |
+| `projects/` | 章节项目和综合项目；复用 `code/`，不复制核心算法 |
 | `docs/` | 教程文档，按章节分目录，每章含 `extensions/` 扩展内容 |
 | `notebooks/` | 交互实验补充，通过 `notebooks/project.py` 复用 `code/` |
 | `assets/` | 代码实验生成的图表（由脚本自动生成，不手动编辑） |
@@ -349,12 +355,14 @@ make help
 - 图片源文件以 `assets/` 为准。
 - 文档内容以 `docs/` 下的 Markdown 为准。
 - Python 实验实现以 `code/` 为准。
+- 项目编排、对照实验和评估以 `projects/` 为准；项目不得复制 `code/` 中的核心算法。
 - 测试以复用 `code/` 为准，不复制核心算法。
 - Notebook 是交互补充，以调用 `code/` 为准。
 - 模型和数据集元数据以 `configs/` 下的 registry 为准。
 - 文档站发布产物 `docs/.vitepress/dist/` 不提交。
 - 本地依赖目录 `node_modules/` 不提交。
 - 过程文档和临时文件放入 `tmpdoc/`，不进入正式文档结构。
+- 项目生成物放入对应项目的 `outputs/`，不提交到仓库。
 
 ---
 

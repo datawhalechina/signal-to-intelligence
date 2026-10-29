@@ -1,8 +1,5 @@
 # 代码运行指南
 
-**版本：** v1.3
-**最后更新：** 2026-06-08
-
 本指南是各章代码实验的依赖参考手册。环境配置和安装步骤见 [附录B](B_environment_setup.md)。
 
 ---
@@ -10,9 +7,10 @@
 ## 目录
 
 1. [快速命令](#快速命令)
-2. [依赖总览](#依赖总览)
-3. [代码实验清单](#代码实验清单)
-4. [常见问题](#常见问题)
+2. [目录职责与项目入口](#目录职责与项目入口)
+3. [依赖总览](#依赖总览)
+4. [代码实验清单](#代码实验清单)
+5. [常见问题](#常见问题)
 
 ---
 
@@ -22,11 +20,11 @@
 # 运行任意实验
 python code/ch{N}_{topic}/{script}.py
 
-# 运行所有测试
-pytest tests/ -v
+# 运行所有测试（隔离本机全局 pytest 插件）
+make test
 
 # 生成覆盖率报告
-pytest tests/ --cov=code --cov-report=html
+make test-cov
 
 # 按章节运行（使用 Makefile）
 make run-exp-ch01   # 离线，<5s
@@ -35,6 +33,26 @@ make run-exp-ch05-api  # 需要 llama.cpp / Ollama 或 API Key
 make run-exp-ch08   # 离线，仅标准库
 make test
 ```
+
+## 目录职责与项目入口
+
+```text
+code/       单点算法实验和图表生成，是核心实现源头
+tests/      验证 code/ 中函数和实验行为
+notebooks/  交互式参数探索和可视化
+projects/   章节项目、对照实验、评估和综合实践
+assets/     实验生成的图片
+```
+
+最低实践任务优先复用 `code/` 中的脚本，不需要为每个任务新建文件。需要多个实验、指标、失败分析或完整报告时，再按 [`projects/README.md`](../../projects/README.md) 创建项目目录。
+
+项目通常从仓库根目录运行，例如：
+
+```bash
+python projects/<project-name>/main.py
+```
+
+项目生成物放在项目自己的 `outputs/` 目录；该目录默认不提交。算法实现发生变化时，优先修改 `code/`，项目只维护编排和评估逻辑。
 
 ---
 
@@ -50,7 +68,7 @@ make test
 ```bash
 pip install -e .
 make run-exp-ch01 run-exp-ch02 run-exp-ch03 run-exp-ch04
-make run-exp-ch05 run-exp-ch06 run-exp-ch06-extra run-exp-ch07 run-exp-ch08
+make run-exp-ch05 run-exp-ch06 run-exp-ch07 run-exp-ch08
 ```
 
 ### 场景 2️⃣：有国内 API（DeepSeek / 阿里云） 或 本地 llama.cpp / Ollama
@@ -65,12 +83,12 @@ python code/ch05_llm_basics/llm_api_demo.py
 
 ### 场景 3️⃣：有 GPU + 能下载模型权重
 
-✅ **额外能运行：** 第 7 章重度脚本（CLIP、Qwen2.5-VL）  
-**依赖：** `pip install -e ".[hf]"` + 按脚本下载 CLIP 或 Qwen2.5-VL 权重
+✅ **额外能运行：** 第 7 章真实 CLIP 对齐演示
+**依赖：** `pip install -e ".[hf]"` 和 `pip install openai-clip`
 
 ```bash
 pip install -e ".[hf]"
-huggingface-cli download Qwen/Qwen2.5-VL-7B-Instruct --local-dir ./models
+pip install openai-clip
 make run-exp-ch07-heavy
 ```
 
@@ -93,15 +111,15 @@ make run-exp-ch07-heavy
 | 第4章 Transformer | numpy, matplotlib, networkx¹ | — | — |
 | 第5章 LLM基础 | numpy, matplotlib, scipy | openai, anthropic² | llama.cpp / Ollama（本地）或任一 API Key |
 | 第6章 LLM应用 | numpy, matplotlib | langchain, faiss-cpu³ | — |
-| 第7章 多模态 | numpy, matplotlib | torch, Pillow, seaborn, scikit-learn⁴ | 下载 Qwen2.5-VL-7B 或 CLIP ViT-B/32⁵ |
+| 第7章 多模态 | numpy, matplotlib | torch, Pillow, seaborn, openai-clip⁴ | `clip_alignment_demo.py` 首次运行下载 CLIP 权重⁵ |
 | 第8章 工程实践 | — （仅标准库） | — | — |
 
 **注释：**
 1. `networkx` 仅 `ch04_transformer/graph_theory_demo.py` 使用，不在 `make run-exp-ch04` 中：`pip install networkx`
 2. 可选；`llm_api_demo.py` 优先检测本地 llama.cpp / Ollama 兼容服务，无需 API Key 也可运行
-3. `make run-exp-ch06` 只运行 `rag_demo.py`（纯 numpy 模拟），无需安装 langchain/faiss
+3. `make run-exp-ch06` 运行 Prompt、微调、RAG、Agent 与系统选型的轻量模拟，无需安装 langchain/faiss
 4. 仅 `ch07_multimodal_llm/` 中的重度脚本（`make run-exp-ch07-heavy`），先执行 `pip install -e ".[hf]"`
-5. `clip_alignment_demo.py` 还需 `pip install openai-clip`，首次运行自动下载 CLIP 权重（~350MB）；`case_studies.py` / `multimodal_applications.py` 需下载 Qwen2.5-VL-7B（~14GB）
+5. `clip_alignment_demo.py` 还需 `pip install openai-clip`；权重大小和缓存位置以当前模型仓库为准。
 
 模型/API 和数据集的统一登记见 `configs/models.yaml` 与 `configs/datasets.yaml`。章节文档、代码注释和 Notebook 涉及外部模型或数据集时，应以这两个文件为事实来源，避免在多个文档中维护互相冲突的版本、依赖和下载说明。
 
@@ -143,7 +161,7 @@ make run-exp-ch07-heavy
 | `TestPositionalEncoding` | PE 形状、数值稳定性、周期性、无 NaN |
 
 ```bash
-pytest tests/test_ch01_dsp.py -v
+env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch01_dsp.py -q
 ```
 
 ---
@@ -181,7 +199,7 @@ pytest tests/test_ch01_dsp.py -v
 | `test_ch02_ml_extended.py` | `TestRandomForest` | Bootstrap 采样 |
 
 ```bash
-pytest tests/test_ch02_optimization.py tests/test_ch02_ml_extended.py -v
+env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch02_optimization.py tests/test_ch02_ml_extended.py -q
 ```
 
 ---
@@ -213,7 +231,7 @@ pytest tests/test_ch02_optimization.py tests/test_ch02_ml_extended.py -v
 | `TestRNNStructure` | 隐状态形状、隐状态演化、激活值有界性 |
 
 ```bash
-pytest tests/test_ch03_deep_learning.py -v
+env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch03_deep_learning.py -q
 ```
 
 ---
@@ -245,7 +263,7 @@ pytest tests/test_ch03_deep_learning.py -v
 | `TestTransformerBlock` | LayerNorm 稳定性、前馈网络 |
 
 ```bash
-pytest tests/test_ch04_transformer.py -v
+env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch04_transformer.py -q
 ```
 
 ---
@@ -296,7 +314,7 @@ python code/ch05_llm_basics/llm_api_demo.py
 | `TestTokenization` | Token 计数 |
 
 ```bash
-pytest tests/test_ch05_llm_basics.py -v
+env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch05_llm_basics.py -q
 ```
 
 ---
@@ -305,19 +323,14 @@ pytest tests/test_ch05_llm_basics.py -v
 
 > ⭐ **完全离线** — 所有脚本使用模拟数据和轻量计算，无需 LangChain/FAISS/API/模型
 
-#### 主力脚本（`make run-exp-ch06`）
-
-| 脚本 | 说明 | 输出图表 | 运行时间 |
-|------|------|---------|---------|
-| `rag_demo.py` | RAG 检索增强生成（模拟 embedding） | `assets/ch06_rag_vector_search.png` | <1s |
-
-#### 扩展脚本（`make run-exp-ch06-extra`）
+#### 章节实验（`make run-exp-ch06`）
 
 | 脚本 | 说明 | 输出图表 | 运行时间 |
 |------|------|---------|---------|
 | `prompt_demo.py` | Zero-shot / Few-shot / CoT 效果对比 | `assets/ch06_prompt_techniques.png` | <1s |
-| `agent_demo.py` | ReAct Agent 框架演示（规则替代 LLM） | `assets/ch06_agent_error_accumulation.png` | <1s |
 | `finetuning_demo.py` | LoRA 不同 rank 下参数量对比 | `assets/ch06_lora_parameters.png` | <1s |
+| `rag_demo.py` | RAG 检索增强生成（模拟 embedding） | `assets/ch06_rag_vector_search.png` | <1s |
+| `agent_demo.py` | ReAct Agent 框架演示（规则替代 LLM） | `assets/ch06_agent_error_accumulation.png` | <1s |
 | `system_design_demo.py` | Prompt/RAG/微调/Agent 方案选型雷达图 | `assets/ch06_system_design.png` | <1s |
 
 #### 测试文件：`tests/test_ch06_llm_applications.py`（4 个测试）
@@ -329,7 +342,7 @@ pytest tests/test_ch05_llm_basics.py -v
 | `TestAgentFramework` | Agent 决策逻辑 |
 
 ```bash
-pytest tests/test_ch06_llm_applications.py -v
+env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch06_llm_applications.py -q
 ```
 
 ---
@@ -337,11 +350,11 @@ pytest tests/test_ch06_llm_applications.py -v
 ### 第7章：多模态LLM
 
 **依赖（主力脚本）：** numpy, matplotlib
-**依赖（重度脚本）：** torch, Pillow, scikit-learn（multimodal_applications）；torch, Pillow, seaborn, openai-clip（clip_alignment_demo）；torch, Pillow, transformers（case_studies）
+**依赖（重度脚本）：** torch, Pillow, seaborn, openai-clip（仅 `clip_alignment_demo.py`）
 **安装（主力）：** `pip install -e .`
 **安装（重度）：** `pip install -e ".[hf]"` 并下载模型
 
-#### 主力脚本（`make run-exp-ch07`，完全离线，6 个）
+#### 主力脚本（`make run-exp-ch07`，完全离线，8 个）
 
 > ⭐ **这些脚本完全离线，仅用 numpy/matplotlib，无需 PyTorch / 模型**
 
@@ -350,28 +363,24 @@ pytest tests/test_ch06_llm_applications.py -v
 | `vit_patches.py` | ViT 图像分块可视化 | `assets/ch07_vit_patches.png` | <1s |
 | `clip_similarity.py` | CLIP 余弦相似度演示（模拟向量） | `assets/ch07_clip_similarity.png` | <1s |
 | `high_resolution_processing.py` | 高分辨率动态分块演示 | `assets/ch07_high_resolution_processing.png` | <1s |
-| `qwen_vl_analysis.py` | Qwen2.5-VL 架构性能分析（静态数据） | `assets/ch07_qwen_vl_analysis.png` | <1s |
+| `qwen_vl_analysis.py` | 图像尺寸与视觉 token 预算 | `assets/ch07_qwen_vl_analysis.png` | <1s |
 | `architecture_diagrams.py` | ViT vs CNN 结构对比、温度参数效果 | `assets/ch07_vit_cnn_comparison.png`, `assets/ch07_temperature_effect.png` | <1s |
 | `explainer_diagrams.py` | LLaVA vs Qwen2.5-VL 架构、融合策略、动态分辨率 | `assets/ch07_architecture_comparison.png` 等 4 张 | <1s |
+| `multimodal_applications.py` | 应用输入、指标与失败模式 | `assets/ch07_multimodal_applications.png` | <1s |
+| `case_studies.py` | 案例处理流程与验收指标 | `assets/ch07_case_studies.png` | <1s |
 
 #### 重度脚本（`make run-exp-ch07-heavy`，需额外依赖 + 下载模型）
 
-> ⚠️ **这些脚本不属于默认实验。CLIP 脚本会下载约 350MB 权重；Qwen2.5-VL 相关脚本需要下载约 14GB 权重，建议使用 GPU。**
+> 该脚本不属于默认实验，会下载 CLIP 权重；实际大小和缓存位置以当前依赖版本为准。
 
 | 脚本 | 说明 | 额外依赖 | 外部资源 |
 |------|------|---------|---------|
-| `clip_alignment_demo.py` | CLIP 图文对齐热力图 | torch, Pillow, seaborn, openai-clip | 自动下载 CLIP ViT-B/32（~350MB） |
-| `multimodal_applications.py` | 图像描述 / VQA / 图像检索 | torch, Pillow, scikit-learn, transformers | 下载 Qwen2.5-VL-7B（~14GB） |
-| `case_studies.py` | 文档理解 / 图表分析 / 多语言应用 | torch, Pillow, transformers | 下载 Qwen2.5-VL-7B（~14GB） |
+| `clip_alignment_demo.py` | 真实 CLIP 图文对齐热力图 | torch, Pillow, seaborn, openai-clip | 首次运行下载 CLIP 权重 |
 
 ```bash
 # 重度脚本安装
 pip install -e ".[hf]"
 pip install openai-clip  # clip_alignment_demo 额外需要
-
-# 下载模型（二选一）
-huggingface-cli download Qwen/Qwen2.5-VL-7B-Instruct --local-dir ./models/Qwen2.5-VL-7B-Instruct
-# 或 设置 HF_ENDPOINT=https://hf-mirror.com 后再下载
 ```
 
 #### 测试文件：`tests/test_ch07_multimodal.py`（6 个测试）
@@ -383,7 +392,7 @@ huggingface-cli download Qwen/Qwen2.5-VL-7B-Instruct --local-dir ./models/Qwen2.
 | `TestHighResolutionProcessing` | 动态分块方法、分辨率自适应 |
 
 ```bash
-pytest tests/test_ch07_multimodal.py -v
+env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch07_multimodal.py -q
 ```
 
 ---
@@ -408,7 +417,7 @@ pytest tests/test_ch07_multimodal.py -v
 | `TestMonitoring` | 性能指标采集、错误追踪 |
 
 ```bash
-pytest tests/test_ch08_engineering.py -v
+env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch08_engineering.py -q
 ```
 
 ---

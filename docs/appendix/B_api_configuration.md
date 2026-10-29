@@ -1,8 +1,5 @@
 # API 配置指南
 
-**版本：** v1.0  
-**最后更新：** 2026-06-03
-
 本指南说明如何配置 LLM API，以运行第 5 章的 `llm_api_demo.py`。
 
 > **前置条件：** 已完成 [快速开始](B_environment_setup.md)  
@@ -14,19 +11,19 @@
 
 | 提供商 | 模型 | 特点 | 地址 | 国内访问 |
 |--------|------|------|------|--------|
-| **DeepSeek** | deepseek-chat | 国内首选，极低价格 | [platform.deepseek.com](https://platform.deepseek.com) | ✅ 直接可用 |
-| **阿里云百炼** | qwen-plus | Qwen系列，中文强 | [bailian.aliyun.com](https://bailian.aliyun.com) | ✅ 直接可用 |
-| **智谱 AI** | glm-4-flash | GLM系列，有免费额度 | [open.bigmodel.cn](https://open.bigmodel.cn) | ✅ 直接可用 |
-| Anthropic | claude-sonnet-4-6 | 综合能力强 | [console.anthropic.com](https://console.anthropic.com) | ❌ 需VPN |
-| OpenAI | gpt-4o-mini | 生态最广 | [platform.openai.com](https://platform.openai.com) | ❌ 需VPN |
+| **DeepSeek** | 以控制台当前列表为准 | OpenAI 兼容接口 | [platform.deepseek.com](https://platform.deepseek.com) | 以所在地区实测为准 |
+| **阿里云百炼** | 以控制台当前列表为准 | Qwen 等模型服务 | [bailian.aliyun.com](https://bailian.aliyun.com) | 以所在地区实测为准 |
+| **智谱 AI** | 以控制台当前列表为准 | GLM 等模型服务 | [open.bigmodel.cn](https://open.bigmodel.cn) | 以所在地区实测为准 |
+| Anthropic | 以控制台当前列表为准 | 托管 API | [console.anthropic.com](https://console.anthropic.com) | 核对服务地区与条款 |
+| OpenAI | 以控制台当前列表为准 | 托管 API | [platform.openai.com](https://platform.openai.com) | 核对服务地区与条款 |
 
-**推荐：** 国内用户选择 **DeepSeek** 或 **阿里云百炼**
+选择前核对模型版本、价格、数据保留政策、服务地区和代码示例所需的接口格式。
 
 ---
 
 ## 获取 API 密钥
 
-### DeepSeek（国内首选）
+### DeepSeek
 
 1. 访问 [platform.deepseek.com](https://platform.deepseek.com)
 2. 注册账户
@@ -49,7 +46,7 @@
 
 ### OpenAI / Anthropic
 
-需要境外网络和信用卡。
+按照服务商当前支持的地区、账户和支付要求配置。
 
 ---
 

@@ -32,49 +32,41 @@ jupyter notebook
 ### 第1章：DSP基础
 - **文件**: `ch01_dsp_interactive.ipynb`
 - **内容**: FFT频谱分析、位置编码交互式实验
-- **学习时间**: 30分钟
 - **交互元素**: 频率调整滑块、实时频谱更新
 
 ### 第2章：优化与梯度下降
 - **文件**: `ch02_optimization_interactive.ipynb`
 - **内容**: 梯度下降可视化、优化器对比
-- **学习时间**: 30分钟
 - **交互元素**: 学习率调整、实时收敛曲线
 
 ### 第3章：深度学习快速通道
 - **文件**: `ch03_deep_learning_interactive.ipynb`
 - **内容**: CNN/RNN结构、模型训练过程
-- **学习时间**: 40分钟
 - **交互元素**: 网络参数调整、实时训练监控
 
 ### 第4章：Transformer详解
 - **文件**: `ch04_transformer_interactive.ipynb`
 - **内容**: 自注意力机制、多头注意力可视化
-- **学习时间**: 40分钟
 - **交互元素**: 注意力权重热力图、位置编码分析
 
 ### 第5章：LLM基础
 - **文件**: `ch05_llm_interactive.ipynb`
 - **内容**: Scaling Laws、Tokenization、Prompt工程实验
-- **学习时间**: 50分钟
 - **交互元素**: Prompt模板、实时API调用
 
 ### 第6章：LLM应用与微调
 - **文件**: `ch06_llm_applications_interactive.ipynb`
 - **内容**: RAG系统演示、Agent框架
-- **学习时间**: 60分钟
 - **交互元素**: 文档检索、Agent决策过程
 
 ### 第7章：多模态LLM
 - **文件**: `ch07_multimodal_interactive.ipynb`
 - **内容**: 图像处理、视觉-语言对齐
-- **学习时间**: 50分钟
 - **交互元素**: 图像上传、实时分析
 
 ### 第8章：LLM工程实践
 - **文件**: `ch08_engineering_interactive.ipynb`
 - **内容**: 模型部署、成本优化
-- **学习时间**: 40分钟
 - **交互元素**: 配置调整、性能基准测试
 
 ## 使用技巧
@@ -174,17 +166,17 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 ## 学习路径建议
 
-### 快速入门（2小时）
+### 快速入门
 1. 运行 `ch01_dsp_interactive.ipynb`
 2. 修改参数，观察结果
 3. 阅读对应的文档
 
-### 标准学习（6小时）
+### 标准学习
 1. 按顺序运行所有notebooks
 2. 完成每个notebook中的练习题
 3. 修改参数进行实验
 
-### 深度学习（12小时）
+### 深度学习
 1. 运行所有notebooks
 2. 修改代码实现新功能
 3. 结合文档和论文深入理解
@@ -206,6 +198,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 - **文档**: `docs/` 目录中的详细说明
 - **代码**: `code/` 目录中的完整实现
 - **测试**: `tests/` 目录中的单元测试
+- **项目**: `projects/` 目录中的章节项目和综合项目
 - **论文**: 各章节推荐的学术论文
 
 ---

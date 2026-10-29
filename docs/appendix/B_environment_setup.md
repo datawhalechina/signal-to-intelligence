@@ -1,9 +1,6 @@
 # 环境配置指南 — 快速开始
 
-**版本：** v2.2  
-**最后更新：** 2026-06-03
-
-本文档覆盖**核心路径**（5分钟快速开始）。
+本文档覆盖能够完成首次运行的核心路径。
 
 **其他场景？选择下方导航：**
 - 📡 **需要 API（DeepSeek/OpenAI/阿里云）** → [API 配置指南](B_api_configuration.md)
@@ -26,7 +23,7 @@ python3 --version
 
 ---
 
-## 5 分钟快速开始
+## 快速开始
 
 ### 步骤 1：选择环境
 
@@ -39,7 +36,7 @@ pip install --upgrade pip setuptools wheel
 
 **B. venv（标准 Python）**
 ```bash
-git clone <repo-url>
+git clone https://github.com/datawhalechina/signal-to-intelligence.git
 cd signal-to-intelligence
 python3 -m venv venv
 source venv/bin/activate      # Linux/macOS
@@ -56,7 +53,7 @@ pip install -e .
 ### 步骤 3：验证
 ```bash
 python3 code/ch01_dsp/fft_spectrum.py
-pytest tests/ -v
+make test
 ```
 
 ---
