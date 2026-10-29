@@ -15,6 +15,10 @@
 
 长 prompt 会让 prefill 变重，长输出会让 decode 持续占用资源。
 
+![LLM 推理请求的生命周期](/diagrams/ch08-inference-request-lifecycle.svg)
+
+*图8.2-1：请求从入口控制、分词和调度进入 Prefill 与 Decode 两阶段，随后流式返回；生产指标再反馈到路由和配置。应先根据问题发生在哪个阶段选择优化手段：TTFT 异常优先检查输入与 Prefill，生成速度和并发异常优先检查 Decode、KV cache 与调度。*
+
 ---
 
 ## KV Cache

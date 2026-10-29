@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 570" role="img" aria-labelledby="title desc">
+  <title id="title">端侧多模态系统的压缩位置与联合验收</title>
+  <desc id="desc">输入表示、模态编码器、跨模态接口和语言模型可以分别压缩，最终由信号保真、对齐质量、任务结果和设备资源共同验收。</desc>
+  <style>text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","Microsoft YaHei",sans-serif;fill:#172033}.t{font-size:25px;font-weight:700}.n{font-size:19px;font-weight:700}.s{font-size:15px;fill:#526076}.a{stroke:#7b879d;stroke-width:3;fill:none;marker-end:url(#arrow)}.d{stroke:#94a3b8;stroke-width:2;stroke-dasharray:7 6;fill:none}</style>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3z" fill="#7b879d"/></marker></defs>
+  <rect width="1440" height="570" rx="24" fill="#f8fafc"/>
+  <text x="60" y="58" class="t">端侧多模态：在资源预算内保留任务所需信息</text>
+  <g transform="translate(60 125)"><rect width="240" height="140" rx="18" fill="#dbeafe"/><text x="22" y="40" class="n">① 输入表示</text><text x="22" y="72" class="s">采样率 · 分辨率 · 窗口</text><text x="22" y="100" class="s">风险：源信息不可逆丢失</text></g>
+  <g transform="translate(355 125)"><rect width="240" height="140" rx="18" fill="#e0e7ff"/><text x="22" y="40" class="n">② 模态编码器</text><text x="22" y="72" class="s">量化 · 剪枝 · 蒸馏</text><text x="22" y="100" class="s">风险：事件与细节退化</text></g>
+  <g transform="translate(650 125)"><rect width="240" height="140" rx="18" fill="#ede9fe"/><text x="22" y="40" class="n">③ 跨模态接口</text><text x="22" y="72" class="s">池化 · 投影 · token 压缩</text><text x="22" y="100" class="s">风险：对齐关系漂移</text></g>
+  <g transform="translate(945 125)"><rect width="240" height="140" rx="18" fill="#ffedd5"/><text x="22" y="40" class="n">④ LLM 与运行时</text><text x="22" y="72" class="s">权重量化 · KV · 算子融合</text><text x="22" y="100" class="s">风险：峰值仍超出预算</text></g>
+  <path d="M301 195H346M596 195H641M891 195H936" class="a"/>
+  <g transform="translate(1215 110)"><rect width="165" height="170" rx="18" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/><text x="18" y="36" class="n">设备预算</text><text x="18" y="69" class="s">峰值内存</text><text x="18" y="96" class="s">延迟 / 实时因子</text><text x="18" y="123" class="s">功耗 / 温度</text><text x="18" y="150" class="s">存储 / 更新</text></g>
+  <path d="M1215 195H1194" class="a"/>
+  <g transform="translate(120 365)"><rect width="1200" height="125" rx="18" fill="#dcfce7"/><text x="26" y="40" class="n">通过条件：四层指标同时满足，而不是“模型能启动”</text><text x="26" y="72" class="s">信号保真：事件召回 / 物理量误差　　对齐质量：Recall@K / 定位　　任务结果：正确性 / 证据一致性</text><text x="26" y="100" class="s">系统资源：峰值内存 / TTFT / 实时因子 / 功耗　　→ 与高精度基线比较并记录退化来源</text></g>
+  <path d="M1065 266 C1065 330,1025 330,1025 356" class="a"/>
+</svg>

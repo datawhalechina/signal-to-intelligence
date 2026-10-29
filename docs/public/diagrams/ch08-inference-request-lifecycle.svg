@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 650" role="img" aria-labelledby="title desc">
+  <title id="title">LLM 推理请求的生命周期</title>
+  <desc id="desc">请求经过入口控制、分词、调度、预填充、KV缓存和逐token解码后流式返回，质量、延迟、成本和错误指标进入监控反馈并影响后续路由与配置。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3z" fill="#64748b"/></marker>
+    <marker id="feedback" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3z" fill="#0f766e"/></marker>
+  </defs>
+  <style>
+    text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;fill:#172033}
+    .title{font-size:26px;font-weight:700}.label{font-size:19px;font-weight:700}.body{font-size:15px}.note{font-size:14px;fill:#526076}
+    .arrow{stroke:#64748b;stroke-width:3;fill:none;marker-end:url(#arrow)}.feedback{stroke:#0f766e;stroke-width:3;stroke-dasharray:9 7;fill:none;marker-end:url(#feedback)}
+  </style>
+  <rect width="1440" height="650" rx="24" fill="#f8fafc"/>
+  <text x="55" y="54" class="title">一次推理请求：入口控制、两阶段生成、流式返回与生产反馈</text>
+
+  <g transform="translate(45 150)"><rect width="155" height="120" rx="15" fill="#dbeafe"/><text x="20" y="39" class="label">请求入口</text><text x="20" y="70" class="body">鉴权 · 限流 · 路由</text><text x="20" y="96" class="note">拒绝或降级异常请求</text></g>
+  <g transform="translate(245 150)"><rect width="155" height="120" rx="15" fill="#e0e7ff"/><text x="20" y="39" class="label">分词与检查</text><text x="20" y="70" class="body">tokenize · 截断</text><text x="20" y="96" class="note">输入长度影响 prefill</text></g>
+  <g transform="translate(445 150)"><rect width="165" height="120" rx="15" fill="#ede9fe"/><text x="20" y="39" class="label">调度与批处理</text><text x="20" y="70" class="body">排队 · 连续批处理</text><text x="20" y="96" class="note">吞吐与等待延迟权衡</text></g>
+  <path d="M200 210H235M400 210H435" class="arrow"/>
+
+  <g transform="translate(680 105)">
+    <rect width="410" height="210" rx="18" fill="#ffedd5"/>
+    <text x="24" y="42" class="label">阶段一：Prefill</text>
+    <text x="24" y="72" class="body">并行处理全部输入 token，建立初始 KV cache</text>
+    <rect x="24" y="96" width="155" height="75" rx="11" fill="#fed7aa"/>
+    <text x="42" y="127" class="body">主要瓶颈：计算</text><text x="42" y="151" class="note">关注 TTFT</text>
+    <rect x="214" y="96" width="170" height="75" rx="11" fill="#fde68a"/>
+    <text x="232" y="127" class="body">写入 KV Cache</text><text x="232" y="151" class="note">占用随上下文增长</text>
+  </g>
+  <path d="M610 210H670" class="arrow"/>
+
+  <g transform="translate(680 365)">
+    <rect width="410" height="180" rx="18" fill="#fef3c7"/>
+    <text x="24" y="42" class="label">阶段二：Decode 循环</text>
+    <text x="24" y="72" class="body">读取历史 K/V → 生成一个 token → 更新缓存</text>
+    <text x="24" y="105" class="body">直到停止条件、长度上限或取消请求</text>
+    <text x="24" y="140" class="note">主要瓶颈：内存访问与调度；关注 tokens/s</text>
+  </g>
+  <path d="M885 315V355" class="arrow"/>
+
+  <g transform="translate(1160 235)"><rect width="220" height="155" rx="16" fill="#dcfce7"/><text x="24" y="42" class="label">流式返回</text><text x="24" y="75" class="body">token / 结束原因</text><text x="24" y="104" class="body">错误或超时状态</text><text x="24" y="132" class="note">用户感知端到端延迟</text></g>
+  <path d="M1090 455C1140 455 1135 330 1150 330" class="arrow"/>
+
+  <g transform="translate(310 455)"><rect width="300" height="120" rx="16" fill="#ccfbf1"/><text x="22" y="38" class="label">观测与反馈</text><text x="22" y="70" class="body">质量 · TTFT · tokens/s · OOM · 成本</text><text x="22" y="96" class="note">驱动路由、batch、上下文与模型配置</text></g>
+  <path d="M1270 390C1270 590 620 610 610 545" class="feedback"/>
+  <path d="M310 515C125 515 120 310 122 280" class="feedback"/>
+
+  <text x="680" y="604" class="note">优化判断必须落到具体阶段：长输入优先检查 prefill，长输出和高并发优先检查 decode、KV cache 与调度。</text>
+</svg>
