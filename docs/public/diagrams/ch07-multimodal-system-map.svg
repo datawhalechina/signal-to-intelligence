@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 510" role="img" aria-labelledby="title desc">
+  <title id="title">多模态系统从不同信号表示到语言接口的主线</title>
+  <desc id="desc">图像、音频、振动和传感器观测经过信号表示、模态编码、跨模态对齐与融合进入语言接口，再由任务质量和部署资源共同验收。</desc>
+  <style>text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","Microsoft YaHei",sans-serif;fill:#172033}.t{font-size:25px;font-weight:700}.n{font-size:20px;font-weight:700}.s{font-size:15px;fill:#526076}.a{stroke:#7b879d;stroke-width:3;fill:none;marker-end:url(#arrow)}</style>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3z" fill="#7b879d"/></marker></defs>
+  <rect width="1440" height="510" rx="24" fill="#f8fafc"/>
+  <text x="60" y="60" class="t">多模态：把不同信号变成可对齐、可推理、可验证的表示</text>
+  <g transform="translate(60 145)"><rect width="190" height="135" rx="18" fill="#dbeafe"/><text x="24" y="43" class="n">观测 + 文本</text><text x="24" y="76" class="s">图像、音频、振动、I/Q</text><text x="24" y="104" class="s">问题、标签、报告、指令</text></g>
+  <g transform="translate(310 145)"><rect width="210" height="135" rx="18" fill="#e0e7ff"/><text x="24" y="43" class="n">表示与模态编码</text><text x="24" y="76" class="s">Patch / 时频图 / 窗口</text><text x="24" y="104" class="s">选择要保留的任务信息</text></g>
+  <g transform="translate(580 145)"><rect width="210" height="135" rx="18" fill="#ede9fe"/><text x="24" y="43" class="n">对齐与融合</text><text x="24" y="76" class="s">投影、对比学习、信号 token</text><text x="24" y="104" class="s">建立信号—语言对应关系</text></g>
+  <g transform="translate(850 145)"><rect width="210" height="135" rx="18" fill="#ffedd5"/><text x="24" y="43" class="n">语言与工具接口</text><text x="24" y="76" class="s">检索、预测、生成、测量</text><text x="24" y="104" class="s">确定性算法保留物理量</text></g>
+  <g transform="translate(1120 145)"><rect width="230" height="135" rx="18" fill="#dcfce7"/><text x="24" y="43" class="n">联合任务验收</text><text x="24" y="76" class="s">信号、对齐、语言、资源</text><text x="24" y="104" class="s">正确性、风险、内存与延迟</text></g>
+  <path d="M251 212H301M521 212H571M791 212H841M1061 212H1111" class="a"/>
+  <g transform="translate(220 356)"><rect width="1000" height="82" rx="16" fill="#ccfbf1"/><text x="26" y="36" class="n">贯穿全流程的表示与工程约束</text><text x="26" y="64" class="s">更密的 patch、窗口和通道可保留细节，也会增加 token、内存和延迟；表示、对齐与压缩都应由任务错误代价反推。</text></g>
+  <path d="M1235 281 C1235 332,1180 332,1180 347" class="a"/>
+</svg>

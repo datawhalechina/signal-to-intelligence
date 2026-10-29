@@ -442,6 +442,6 @@ $$L_{i,j} = -\log \frac{\exp(\text{sim}(z_i, z_j) / \tau)}{\sum_{k=1}^{2N} \math
 
 ---
 
-**下一节：** [7.2 Qwen2.5-VL：高分辨率多模态LLM案例](02_qwen_vl.md)
+**下一节：** [7.2 从非视觉信号到语言对齐](02_signal_language_alignment.md)
 
 **扩展阅读：** [对比学习与投影层深度细节](extensions/multimodal_training_details.md)（InfoNCE 推导、温度参数原理、投影层设计）

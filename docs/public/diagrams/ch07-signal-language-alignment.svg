@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 560" role="img" aria-labelledby="title desc">
+  <title id="title">非视觉信号与语言的表示对齐链路</title>
+  <desc id="desc">音频、振动、雷达和传感器信号经过信号变换、模态编码与跨模态对齐，进入检索或语言生成任务，并由信号、对齐、语言和资源四层指标验收。</desc>
+  <style>text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","Microsoft YaHei",sans-serif;fill:#172033}.t{font-size:25px;font-weight:700}.n{font-size:19px;font-weight:700}.s{font-size:15px;fill:#526076}.a{stroke:#7b879d;stroke-width:3;fill:none;marker-end:url(#arrow)}</style>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3z" fill="#7b879d"/></marker></defs>
+  <rect width="1440" height="560" rx="24" fill="#f8fafc"/>
+  <text x="60" y="58" class="t">从信号表示到语言对齐：每一层都可能保留或丢失任务信息</text>
+  <g transform="translate(55 130)"><rect width="220" height="150" rx="18" fill="#dbeafe"/><text x="22" y="40" class="n">非视觉观测</text><text x="22" y="72" class="s">音频 · 振动 · I/Q</text><text x="22" y="99" class="s">雷达 · 多通道传感器</text><text x="22" y="126" class="s">采样率、噪声、同步</text></g>
+  <g transform="translate(330 130)"><rect width="230" height="150" rx="18" fill="#e0e7ff"/><text x="22" y="40" class="n">表示与变换</text><text x="22" y="72" class="s">波形 · 频谱 · 时频图</text><text x="22" y="99" class="s">窗口 · 事件片段 · 通道图</text><text x="22" y="126" class="s">决定首先保留什么</text></g>
+  <g transform="translate(615 130)"><rect width="230" height="150" rx="18" fill="#ede9fe"/><text x="22" y="40" class="n">模态编码</text><text x="22" y="72" class="s">卷积 · Transformer</text><text x="22" y="99" class="s">全局向量或信号 token</text><text x="22" y="126" class="s">控制有效表示容量</text></g>
+  <g transform="translate(900 130)"><rect width="230" height="150" rx="18" fill="#ffedd5"/><text x="22" y="40" class="n">跨模态对齐</text><text x="22" y="72" class="s">对比学习 · 标签 · 指令</text><text x="22" y="99" class="s">投影器 · 查询 token</text><text x="22" y="126" class="s">建立信号—语言对应</text></g>
+  <g transform="translate(1185 130)"><rect width="200" height="150" rx="18" fill="#dcfce7"/><text x="22" y="40" class="n">语言接口</text><text x="22" y="72" class="s">检索 · 分类 · 问答</text><text x="22" y="99" class="s">描述 · 诊断 · 工具</text><text x="22" y="126" class="s">输出必须可追溯</text></g>
+  <path d="M276 205H321M561 205H606M846 205H891M1131 205H1176" class="a"/>
+  <g transform="translate(150 370)"><rect width="1140" height="105" rx="18" fill="#ccfbf1"/><text x="25" y="40" class="n">联合验收，而不是只看语言输出</text><text x="25" y="70" class="s">信号侧：事件与物理量是否保留　　对齐侧：正确描述能否匹配　　语言侧：事实是否有证据　　系统侧：token、内存、延迟与功耗</text></g>
+  <path d="M1285 281 C1285 340,1235 340,1235 361" class="a"/>
+</svg>

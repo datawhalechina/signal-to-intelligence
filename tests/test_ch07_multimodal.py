@@ -126,37 +126,36 @@ class TestChapter7Demos:
         demo = load_code_module("code/ch07_multimodal_llm/qwen_vl_analysis.py")
         result = demo.run_experiment()
 
-        assert len(result["model_names"]) == 5
-        assert result["resolutions"].shape == (5,)
-        assert result["accuracies"].shape == (5,)
-        assert result["efficiency"].shape == (5,)
-        assert result["models_data"]["Qwen2.5-VL"]["chinese_optimized"] is True
-        assert result["accuracies"][result["model_names"].index("Qwen2.5-VL")] > result["accuracies"][0]
+        assert result["image_shapes"].shape == (4, 2)
+        assert result["patch_tokens"].shape == (4,)
+        assert result["visual_tokens"].shape == (4,)
+        assert result["visual_tokens"][-1] > result["visual_tokens"][0]
+        assert all(result["patch_tokens"] >= result["visual_tokens"])
 
     def test_case_studies_static_data(self, load_code_module, tmp_path):
         demo = load_code_module("code/ch07_multimodal_llm/case_studies.py")
         result = demo.run_experiment()
-        chart_path = demo._save_performance_chart(
-            datasets=result["datasets"],
+        chart_path = demo._save_evaluation_map(
+            cases=result["cases"],
             output_path=tmp_path / "case_studies.png",
         )
 
-        assert len(result["datasets"]) == 3
-        assert result["datasets"][2]["llava"] is None
-        assert result["datasets"][0]["qwen"].shape == (3,)
+        assert len(result["cases"]) == 3
+        assert result["cases"][0]["input"] == "Page image"
+        assert "Field F1" in result["cases"][0]["metrics"]
         assert chart_path.exists()
 
     def test_multimodal_applications_static_data(self, load_code_module, tmp_path):
         demo = load_code_module("code/ch07_multimodal_llm/multimodal_applications.py")
         result = demo.run_experiment()
-        chart_path = demo._save_performance_chart(
-            datasets=result["datasets"],
+        chart_path = demo._save_task_map(
+            tasks=result["tasks"],
             output_path=tmp_path / "multimodal_applications.png",
         )
 
-        assert len(result["datasets"]) == 3
-        assert result["datasets"][1]["ylabel"] == "Accuracy (%)"
-        assert result["datasets"][0]["qwen"].shape == (3,)
+        assert len(result["tasks"]) == 3
+        assert result["tasks"][1]["output"] == "answer"
+        assert "Recall@k" in result["tasks"][2]["metrics"]
         assert chart_path.exists()
 
     def test_explainer_diagrams(self, load_code_module, tmp_path):
