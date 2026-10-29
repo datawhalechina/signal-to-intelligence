@@ -4,6 +4,7 @@
 目标：用 NumPy 实现简单的多头自注意力，并可视化注意力权重
 """
 
+from importlib.util import module_from_spec, spec_from_file_location
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -16,21 +17,26 @@ plt.rcParams["axes.unicode_minus"] = False
 SEQ_LEN = 8
 D_MODEL = 32
 NUM_HEADS = 4
-OUTPUT_PATH = Path("assets/ch04_self_attention.png")
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+OUTPUT_PATH = PROJECT_ROOT / "assets/ch04_self_attention.png"
 
-# ============ 核心逻辑 ============
-def scaled_dot_product_attention(Q, K, V, mask=None):
-    d_k = Q.shape[-1]
-    scores = Q @ K.T / np.sqrt(d_k)
 
-    if mask is not None:
-        scores = scores + mask
+def _load_attention_core():
+    """Load the local core module for direct scripts and path-based imports."""
+    module_path = Path(__file__).with_name("attention_core.py")
+    spec = spec_from_file_location("ch04_attention_core", module_path)
+    module = module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
 
-    scores = scores - np.max(scores, axis=-1, keepdims=True)
-    attn_weights = np.exp(scores)
-    attn_weights = attn_weights / np.sum(attn_weights, axis=-1, keepdims=True)
-    output = attn_weights @ V
-    return output, attn_weights
+
+_CORE = _load_attention_core()
+
+# Backward-compatible public names used by the existing notebook and tests.
+scaled_dot_product_attention = _CORE.scaled_dot_product_attention
+layer_norm = _CORE.layer_norm
+feed_forward_network = _CORE.feed_forward_network
 
 
 def build_synthetic_sequence(seq_len, d_model, rng=None):
@@ -94,17 +100,6 @@ def multi_head_attention(X, W_q, W_k, W_v, W_o, num_heads=NUM_HEADS):
     attn_output = np.concatenate(attn_outputs, axis=-1)
     output = attn_output @ W_o
     return output, attn_weights_list
-
-
-def layer_norm(x, epsilon=1e-6):
-    mean = np.mean(x, axis=-1, keepdims=True)
-    std = np.std(x, axis=-1, keepdims=True)
-    return (x - mean) / (std + epsilon)
-
-
-def feed_forward_network(x, W1, b1, W2, b2):
-    hidden = np.maximum(0, x @ W1 + b1)
-    return hidden @ W2 + b2
 
 
 def run_experiment(seq_len=SEQ_LEN, d_model=D_MODEL, num_heads=NUM_HEADS, seed=42):

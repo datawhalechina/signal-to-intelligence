@@ -35,6 +35,25 @@ class TestSelfAttention:
         # Each row should sum to 1
         assert np.allclose(np.sum(attention_weights, axis=1), 1.0)
 
+    def test_attention_core_rejects_incompatible_shapes(self, load_code_module):
+        core = load_code_module("code/ch04_transformer/attention_core.py")
+
+        with np.testing.assert_raises(ValueError):
+            core.scaled_dot_product_attention(
+                np.ones((2, 3)),
+                np.ones((4, 2)),
+                np.ones((4, 3)),
+            )
+
+    def test_causal_mask_blocks_future_positions(self, load_code_module):
+        core = load_code_module("code/ch04_transformer/attention_core.py")
+        mask = core.causal_mask(4)
+
+        assert mask.shape == (4, 4)
+        future_positions = np.triu_indices(4, k=1)
+        assert np.all(mask[future_positions] < 0)
+        assert np.allclose(np.tril(mask), 0.0)
+
     def test_multihead_attention(self, seed, load_code_module):
         """Test multi-head attention"""
         self_attention = load_code_module("code/ch04_transformer/self_attention.py")
