@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 720" role="img" aria-labelledby="title desc">
+  <title id="title">COCO8 YOLO 与 DETR smoke test 结果解读</title>
+  <desc id="desc">三张图片十个人物框的 smoke test 中，YOLO 和 DETR 的精度、预测数量和 CPU 延迟不同；图强调低分阈值、分数校准、样本量和硬件条件限制，不能据此进行模型排名。</desc>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3z" fill="#64748b"/></marker></defs>
+  <style>
+    text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;fill:#172033}
+    .title{font-size:26px;font-weight:700}.label{font-size:20px;font-weight:700}.metric{font-size:24px;font-weight:700}.body{font-size:16px}.note{font-size:14px;fill:#526076}
+    .arrow{stroke:#64748b;stroke-width:3;fill:none;marker-end:url(#arrow)}
+  </style>
+  <rect width="1440" height="720" rx="24" fill="#f8fafc"/>
+  <text x="54" y="52" class="title">如何阅读这次 smoke test：先确认链路，再讨论工作点和工程代价</text>
+
+  <g transform="translate(55 88)"><rect width="1330" height="78" rx="14" fill="#fef3c7"/><text x="25" y="33" class="label">实验边界</text><text x="170" y="33" class="body">3 张真实 COCO 图片 · 10 个 person 框 · CPU · score ≥ 0.05 · IoU=0.5</text><text x="170" y="59" class="note">样本用于验证真实推理管线，不足以估计总体模型性能。</text></g>
+
+  <g transform="translate(55 210)">
+    <rect width="410" height="245" rx="18" fill="#e0e7ff"/>
+    <text x="24" y="42" class="label">YOLOv8n</text>
+    <text x="24" y="84" class="metric">AP 0.546 · Recall 0.600</text>
+    <text x="24" y="122" class="body">17 个预测：6 TP / 11 FP / 4 FN</text>
+    <text x="24" y="160" class="metric">CPU 平均 25.7 ms</text>
+    <text x="24" y="198" class="note">较少预测、较低延迟；本次仍有漏检</text>
+  </g>
+  <g transform="translate(515 210)">
+    <rect width="410" height="245" rx="18" fill="#ede9fe"/>
+    <text x="24" y="42" class="label">DETR ResNet-50</text>
+    <text x="24" y="84" class="metric">AP 0.638 · Recall 0.900</text>
+    <text x="24" y="122" class="body">79 个预测：9 TP / 70 FP / 1 FN</text>
+    <text x="24" y="160" class="metric">CPU 平均 608.0 ms</text>
+    <text x="24" y="198" class="note">低阈值保留大量低分框，不能只看 Recall</text>
+  </g>
+  <path d="M465 332H505" class="arrow"/>
+
+  <g transform="translate(975 210)">
+    <rect width="410" height="245" rx="18" fill="#ffedd5"/>
+    <text x="24" y="42" class="label">首先检查：工作点是否可比？</text>
+    <text x="24" y="82" class="body">相同 score 阈值 ≠ 相同置信度语义</text>
+    <text x="24" y="116" class="body">不同模型的分数校准可能不同</text>
+    <text x="24" y="150" class="body">应查看 PR 曲线或固定业务目标</text>
+    <text x="24" y="190" class="note">例如固定 Recall 后比较 Precision 与延迟</text>
+  </g>
+  <path d="M925 332H965" class="arrow"/>
+
+  <g transform="translate(55 510)"><rect width="400" height="140" rx="16" fill="#dcfce7"/><text x="22" y="40" class="label">1. 质量</text><text x="22" y="75" class="body">AP/PR 要结合阈值与样本规模</text><text x="22" y="106" class="note">单个目标即可显著改变当前结果</text></g>
+  <g transform="translate(520 510)"><rect width="400" height="140" rx="16" fill="#ccfbf1"/><text x="22" y="40" class="label">2. 工程</text><text x="22" y="75" class="body">延迟只在相同机器和口径下成立</text><text x="22" y="106" class="note">模型规模与输入处理也不同</text></g>
+  <g transform="translate(985 510)"><rect width="400" height="140" rx="16" fill="#fee2e2"/><text x="22" y="40" class="label">3. 错误</text><text x="22" y="75" class="body">叠框图定位漏检、误检与密集场景</text><text x="22" y="106" class="note">错误类型比单个汇总分数更可行动</text></g>
+
+  <text x="420" y="690" class="label">结论：真实权重链路已通过；模型优劣仍需更大 val2017 子集和明确工作点。</text>
+</svg>

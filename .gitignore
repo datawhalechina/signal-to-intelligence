@@ -61,6 +61,9 @@ data/cache/
 data/external/
 data/generated/
 
+# Chapter and capstone project outputs
+projects/*/outputs/
+
 # Logs
 *.log
 logs/
@@ -89,6 +92,7 @@ COMPLETION_SUMMARY.md
 PROGRESS.md
 DECISIONS.md
 ROOT_FILES_ANALYSIS.md
+SESSION_HANDOFF.md
 
 # Node.js / VitePress
 node_modules/

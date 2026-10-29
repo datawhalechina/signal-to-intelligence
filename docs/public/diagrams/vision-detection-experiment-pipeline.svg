@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 700" role="img" aria-labelledby="title desc">
+  <title id="title">YOLO 与 DETR 统一检测实验流程</title>
+  <desc id="desc">真实 COCO 图片和人物标注分别进入 YOLO 与 DETR，两个适配器把输出转换成相同检测契约，再统一计算精度、延迟和错误案例。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3z" fill="#64748b"/></marker>
+  </defs>
+  <style>
+    text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;fill:#172033}
+    .title{font-size:26px;font-weight:700}.label{font-size:20px;font-weight:700}.body{font-size:16px}.note{font-size:14px;fill:#526076}
+    .arrow{stroke:#64748b;stroke-width:3;fill:none;marker-end:url(#arrow)}.rule{stroke:#0f766e;stroke-width:2;stroke-dasharray:8 6;fill:none}
+  </style>
+  <rect width="1440" height="700" rx="24" fill="#f8fafc"/>
+  <text x="54" y="52" class="title">真实视觉检测对比：共享数据和评价契约，而不是直接比较两个模型的原始输出</text>
+
+  <g transform="translate(45 220)">
+    <rect width="220" height="180" rx="17" fill="#dbeafe"/>
+    <text x="24" y="42" class="label">COCO 图片 + 标注</text>
+    <text x="24" y="78" class="body">筛选 person 图片</text>
+    <text x="24" y="108" class="body">真实框：x, y, w, h</text>
+    <text x="24" y="141" class="note">固定图片 ID 与非 crowd 条件</text>
+  </g>
+
+  <g transform="translate(355 100)">
+    <rect width="330" height="200" rx="17" fill="#e0e7ff"/>
+    <text x="24" y="42" class="label">YOLOv8n 路线</text>
+    <text x="24" y="78" class="body">CNN 特征 → 检测头 → NMS</text>
+    <text x="24" y="110" class="body">固定输入：640</text>
+    <rect x="24" y="133" width="280" height="42" rx="9" fill="#c7d2fe"/>
+    <text x="42" y="160" class="body">适配为 person + xyxy + score</text>
+  </g>
+  <g transform="translate(355 390)">
+    <rect width="330" height="200" rx="17" fill="#ede9fe"/>
+    <text x="24" y="42" class="label">DETR ResNet-50 路线</text>
+    <text x="24" y="78" class="body">CNN 骨干 → Transformer → 集合预测</text>
+    <text x="24" y="110" class="body">checkpoint 自带图像预处理</text>
+    <rect x="24" y="133" width="280" height="42" rx="9" fill="#ddd6fe"/>
+    <text x="42" y="160" class="body">适配为 person + xyxy + score</text>
+  </g>
+  <path d="M265 310C310 310 310 200 345 200" class="arrow"/>
+  <path d="M265 310C310 310 310 490 345 490" class="arrow"/>
+
+  <g transform="translate(775 210)">
+    <rect width="280" height="270" rx="18" fill="#ffedd5"/>
+    <text x="24" y="43" class="label">统一评价契约</text>
+    <text x="24" y="78" class="body">相同图片与 person 类别</text>
+    <text x="24" y="110" class="body">相同最低分数阈值</text>
+    <text x="24" y="142" class="body">相同 IoU=0.5 匹配</text>
+    <text x="24" y="174" class="body">一对一真实框匹配</text>
+    <line x1="24" y1="198" x2="254" y2="198" class="rule"/>
+    <text x="24" y="231" class="note">模型只加载一次；首图预热</text>
+    <text x="24" y="255" class="note">计时含预处理、前向、后处理</text>
+  </g>
+  <path d="M685 200C730 200 730 275 765 275" class="arrow"/>
+  <path d="M685 490C730 490 730 415 765 415" class="arrow"/>
+
+  <g transform="translate(1150 105)"><rect width="235" height="130" rx="16" fill="#dcfce7"/><text x="22" y="40" class="label">质量指标</text><text x="22" y="74" class="body">AP · Precision · Recall</text><text x="22" y="103" class="body">TP · FP · FN</text></g>
+  <g transform="translate(1150 285)"><rect width="235" height="130" rx="16" fill="#ccfbf1"/><text x="22" y="40" class="label">工程指标</text><text x="22" y="74" class="body">平均 · 中位 · P95 延迟</text><text x="22" y="103" class="note">必须限定设备与软件版本</text></g>
+  <g transform="translate(1150 465)"><rect width="235" height="130" rx="16" fill="#fee2e2"/><text x="22" y="40" class="label">错误案例</text><text x="22" y="74" class="body">绿色：真实框</text><text x="22" y="103" class="body">橙色：模型预测框</text></g>
+  <path d="M1055 285C1100 285 1100 170 1140 170" class="arrow"/>
+  <path d="M1055 345H1140" class="arrow"/>
+  <path d="M1055 415C1100 415 1100 530 1140 530" class="arrow"/>
+
+  <text x="355" y="650" class="note">输出不是“谁赢了”，而是三个可检查的问题：检测质量如何、工程代价多大、错误发生在哪里。</text>
+</svg>
