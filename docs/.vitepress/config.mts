@@ -18,7 +18,7 @@ const notebookMap: Record<string, string> = {
 export default defineConfig({
   lang: 'zh-CN',
   title: "从信号到智能",
-  description: "深度学习与大语言模型的完整学习路径",
+  description: "从信号表示、跨模态对齐到大语言模型工程的学习路径",
   base: baseConfig,
   ignoreDeadLinks: true,
   markdown: {
@@ -253,11 +253,12 @@ export default defineConfig({
         text: '7. 多模态大语言模型',
         link: '/07_multimodal_llm/',
         items: [
-          { text: '7.1 视觉语言融合', link: '/07_multimodal_llm/01_vision_language' },
-          { text: '7.2 Qwen VL', link: '/07_multimodal_llm/02_qwen_vl' },
-          { text: '7.3 高分辨率图像处理', link: '/07_multimodal_llm/03_high_resolution' },
-          { text: '7.4 应用场景', link: '/07_multimodal_llm/04_applications' },
-          { text: '7.5 案例研究', link: '/07_multimodal_llm/05_case_studies' },
+          { text: '7.1 视觉语言对齐', link: '/07_multimodal_llm/01_vision_language' },
+          { text: '7.2 信号语言对齐', link: '/07_multimodal_llm/02_signal_language_alignment' },
+          { text: '7.3 多模态架构', link: '/07_multimodal_llm/02_qwen_vl' },
+          { text: '7.4 高分辨率图像处理', link: '/07_multimodal_llm/03_high_resolution' },
+          { text: '7.5 应用与指标', link: '/07_multimodal_llm/04_applications' },
+          { text: '7.6 案例与评测', link: '/07_multimodal_llm/05_case_studies' },
           {
             text: '深度阅读 (Extensions)',
             items: [
@@ -276,13 +277,12 @@ export default defineConfig({
           { text: '8.3 成本优化', link: '/08_llm_engineering/03_cost_optimization' },
           { text: '8.4 评估与基准', link: '/08_llm_engineering/04_evaluation_benchmark' },
           { text: '8.5 生产系统设计', link: '/08_llm_engineering/05_production_system' },
+          { text: '8.6 端侧多模态验收', link: '/08_llm_engineering/06_edge_multimodal_deployment' },
           {
             text: '深度阅读 (Extensions)',
             items: [
-              { text: '8.E1 高级量化', link: '/08_llm_engineering/extensions/advanced_quantization' },
-              { text: '8.E2 分布式推理', link: '/08_llm_engineering/extensions/distributed_inference' },
-              { text: '8.E3 运筹学视角', link: '/08_llm_engineering/extensions/operations_research_serving' },
-              { text: '8.E4 推理加速与硬件适配', link: '/08_llm_engineering/extensions/hardware_acceleration_and_conversion' }
+              { text: '8.E1 运筹学视角', link: '/08_llm_engineering/extensions/operations_research_serving' },
+              { text: '8.E2 推理加速与硬件适配', link: '/08_llm_engineering/extensions/hardware_acceleration_and_conversion' }
             ]
           }
         ]
@@ -295,7 +295,8 @@ export default defineConfig({
           { text: 'B 环境配置', link: '/appendix/B_environment_setup' },
           { text: 'C 代码运行指南', link: '/appendix/C_code_guide' },
           { text: 'D 数学基础速查表', link: '/appendix/D_math_quick_reference' },
-          { text: 'E 项目维护说明', link: '/appendix/E_project_maintenance' }
+          { text: 'E 项目维护说明', link: '/appendix/E_project_maintenance' },
+          { text: 'F 图像与可视化规范', link: '/appendix/F_visual_guide' }
         ]
       }
     ],

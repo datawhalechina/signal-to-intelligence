@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 430" role="img" aria-labelledby="title desc">
+  <title id="title">从信号处理到智能系统的教程主线</title><desc id="desc">信息经过表示、变换、检测预测、生成对齐和工程反馈，逐步成为可用智能系统。</desc>
+  <style>text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","Microsoft YaHei",sans-serif;fill:#172033}.t{font-size:25px;font-weight:700}.s{font-size:16px;fill:#526076}.n{font-size:18px;font-weight:700}.a{stroke:#7b879d;stroke-width:3;fill:none;marker-end:url(#arrow)}</style>
+  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#7b879d"/></marker></defs>
+  <rect width="1440" height="430" rx="24" fill="#f8fafc"/><text x="64" y="64" class="t">从信号到智能：全教程的一条信息处理主线</text><text x="64" y="96" class="s">每章回答一个问题：信息如何被表示、组合、判断、生成，并在真实系统中持续改进？</text>
+  <g transform="translate(64 156)"><rect width="202" height="132" rx="18" fill="#dbeafe"/><text x="22" y="48" class="n">① 信号与观测</text><text x="22" y="78" class="s">时域 · 频域 · 噪声</text><text x="22" y="104" class="s">第 1 章</text></g>
+  <g transform="translate(286 156)"><rect width="202" height="132" rx="18" fill="#e0e7ff"/><text x="22" y="48" class="n">② 表示与学习</text><text x="22" y="78" class="s">目标 · 损失 · 特征</text><text x="22" y="104" class="s">第 2–3 章</text></g>
+  <g transform="translate(508 156)"><rect width="202" height="132" rx="18" fill="#ede9fe"/><text x="22" y="48" class="n">③ 动态聚合</text><text x="22" y="78" class="s">注意力 · 位置 · 掩码</text><text x="22" y="104" class="s">第 4 章</text></g>
+  <g transform="translate(730 156)"><rect width="202" height="132" rx="18" fill="#ffedd5"/><text x="22" y="48" class="n">④ 预测与生成</text><text x="22" y="78" class="s">概率 · 采样 · 对齐</text><text x="22" y="104" class="s">第 5 章</text></g>
+  <g transform="translate(952 156)"><rect width="202" height="132" rx="18" fill="#dcfce7"/><text x="22" y="48" class="n">⑤ 应用与多模态</text><text x="22" y="78" class="s">Prompt · RAG · Agent</text><text x="22" y="104" class="s">第 6–7 章</text></g>
+  <g transform="translate(1174 156)"><rect width="202" height="132" rx="18" fill="#ccfbf1"/><text x="22" y="48" class="n">⑥ 工程反馈</text><text x="22" y="78" class="s">评估 · 成本 · 可靠性</text><text x="22" y="104" class="s">第 8 章</text></g>
+  <path d="M267 222H277M489 222H499M711 222H721M933 222H943M1155 222H1165" class="a"/><path d="M1275 300 C1275 370,387 370,387 300" class="a"/><text x="670" y="386" class="s">质量、成本、可靠性与用户反馈回到下一轮表示、目标和系统设计</text>
+</svg>
