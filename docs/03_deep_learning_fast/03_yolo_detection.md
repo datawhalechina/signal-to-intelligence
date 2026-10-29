@@ -215,6 +215,18 @@ YOLO让CNN从“识别”进一步走向“理解空间位置”。
 
 ---
 
+## 从算法原理到统一检测实验
+
+只理解 YOLO 的网络结构，还不能回答它在实际任务中是否适用。为了把算法思想连接到可验证项目，本教程让 YOLOv8n 与 DETR ResNet-50 在同一批真实图片、同一类别和同一评价契约下运行。
+
+![YOLO 与 DETR 统一检测实验流程](/diagrams/vision-detection-experiment-pipeline.svg)
+
+*图3.3-1：真实 COCO 图片分别进入 YOLO 和 DETR，模型输出统一为 `person + xyxy + score` 后，再比较 AP、Precision/Recall、延迟和错误案例。应重点观察评价契约：只有数据、类别、阈值、匹配和计时口径明确，模型差异才有解释意义。*
+
+完整项目、COCO8 真实权重 smoke test 及其边界说明见[视觉目标检测方法对比](../../projects/vision_detection_comparison/README.md)。这一步把本节“检测是什么”的算法理解，推进到“如何公平测量检测系统”的工程实践。
+
+---
+
 ## 代码实验
 
 完整的代码示例位于：[`code/ch03_deep_learning_fast/detection_segmentation_demo.py`](../../code/ch03_deep_learning_fast/detection_segmentation_demo.py)
@@ -228,7 +240,7 @@ python code/ch03_deep_learning_fast/detection_segmentation_demo.py
 
 ![YOLO vs Segmentation](/assets/ch03_yolo_vs_segmentation.png)
 
-*图3.3：目标检测与图像分割输出形式的对比。左侧强调 YOLO 用边界框回答”目标在哪里”，右侧则展示像素级理解如何进一步细化空间信息。*
+*图3.4：目标检测与图像分割输出形式的对比。左侧强调 YOLO 用边界框回答”目标在哪里”，右侧则展示像素级理解如何进一步细化空间信息。*
 
 **代码文件：** [`code/ch03_deep_learning_fast/detection_segmentation_demo.py`](../../code/ch03_deep_learning_fast/detection_segmentation_demo.py)  
 **运行方式：** `python code/ch03_deep_learning_fast/detection_segmentation_demo.py`
