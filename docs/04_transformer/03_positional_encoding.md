@@ -221,7 +221,7 @@ $$PE(pos, 2i+1) = \cos\left(\frac{pos}{10000^{2i/d}}\right)$$
 
 ![Positional Encoding Visualization](/assets/ch04_positional_encoding.png)
 
-*图4.4：位置编码的结构。左上：热力图显示不同维度在不同位置的值（低频维度变化慢，高频维度变化快）。右上：不同维度的周期性曲线。左下：位置编码的范数（近似常数）。右下：相邻位置的相似度（编码了相对距离信息）。*
+*图4.2：位置编码的结构。左上：热力图显示不同维度在不同位置的值（低频维度变化慢，高频维度变化快）。右上：不同维度的周期性曲线。左下：位置编码的范数（近似常数）。右下：相邻位置的相似度（编码了相对距离信息）。*
 
 **代码文件：** [`code/ch04_transformer/positional_encoding.py`](../../code/ch04_transformer/positional_encoding.py)  
 **运行方式：** `python code/ch04_transformer/positional_encoding.py`

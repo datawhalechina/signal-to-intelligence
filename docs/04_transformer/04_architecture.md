@@ -140,13 +140,7 @@ $$\text{LayerNorm}(x) = \gamma \frac{x - \mu}{\sigma} + \beta$$
 
 ## 为什么 Transformer 可以层层堆叠？
 
-单层注意力只能完成一次关系聚合，但复杂语义往往需要多步推理。层层堆叠的意义在于：
-- 低层先捕捉局部与基础关系
-- 中层开始组合更复杂的上下文模式
-- 高层形成更抽象的语义表示
-
-这和 CNN 从边缘到纹理到物体、或传统深层网络从浅层特征到高层语义的演化是相通的。
-因此，Transformer 的强大并不只来自单个 attention，而来自**attention block 在深层结构中的反复组合与抽象提升。**
+单层注意力只进行一次信息聚合。堆叠多个 block 后，每层都在上一层表示的基础上继续计算注意力和前馈变换，因此信息可以经过多步组合。不同层具体编码什么需要通过实验分析，不能固定解释为“低层局部、高层语义”。
 
 ---
 
@@ -289,7 +283,7 @@ LLM 不只是做固定输入到输出的映射，而是要持续生成自然语�
 
 ![Causal Mask](/assets/ch04_causal_mask.png)
 
-*图4.3：因果掩码会屏蔽未来位置，使每个 token 只能利用自己和历史上下文。这正是生成式 LLM 的关键约束。*
+*图4.4：因果掩码会屏蔽未来位置，使每个 token 只能利用自己和历史上下文。这正是生成式 LLM 的关键约束。*
 
 **代码文件：** [`code/ch04_transformer/causal_mask_demo.py`](../../code/ch04_transformer/causal_mask_demo.py)  
 **运行方式：** `python code/ch04_transformer/causal_mask_demo.py`

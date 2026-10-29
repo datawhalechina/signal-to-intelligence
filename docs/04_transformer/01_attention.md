@@ -87,9 +87,7 @@ $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)
 - 用另一套子空间保存内容
 - 在训练中自动学习最合适的关系结构
 
-这也是自注意力比简单相似度匹配更强的关键原因之一。
-
-从工程角度看，Q/K/V 的拆分相当于给“信息检索”和“信息内容”设置了不同接口，这让注意力既可解释，又能学习复杂关系。
+这使模型能够分别学习“如何匹配”和“聚合什么内容”。从工程角度看，Q/K/V 为这两步提供了不同接口。注意力权重可以用于观察模型的聚合位置，但不能单独作为因果解释。
 
 ---
 
@@ -213,7 +211,7 @@ RNN 必须按时间步顺序计算，而自注意力可以一次性计算整个�
 
 ![Scaled Attention](/assets/ch04_scaled_attention.png)
 
-*图4.2：缩放前后注意力分数分布对比。展示 `sqrt(d_k)` 对训练稳定性的作用。*
+*图4.3：缩放前后注意力分数分布对比。展示 `sqrt(d_k)` 对训练稳定性的作用。*
 
 **代码文件：** [`code/ch04_transformer/scaled_attention_demo.py`](../../code/ch04_transformer/scaled_attention_demo.py)  
 **运行方式：** `python code/ch04_transformer/scaled_attention_demo.py`

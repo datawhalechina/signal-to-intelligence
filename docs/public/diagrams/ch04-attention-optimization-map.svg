@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="680" viewBox="0 0 1200 680" role="img" aria-labelledby="title desc">
+  <title id="title">注意力优化路线图</title>
+  <desc id="desc">从注意力的五类瓶颈出发，分别连接到稀疏注意力、近似注意力、GQA 或 MQA、位置编码和 FlashAttention，并标出各自的主要代价。</desc>
+  <defs>
+    <style>
+      text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","Microsoft YaHei",sans-serif}
+      .bg{fill:#f8fafc}.title{font-size:32px;font-weight:700;fill:#172554}.sub{font-size:18px;fill:#475569}
+      .center{fill:#1d4ed8}.centerText{font-size:23px;font-weight:700;fill:#fff;text-anchor:middle}
+      .card{fill:#fff;stroke-width:2}.head{font-size:20px;font-weight:700}.body{font-size:16px;fill:#334155}
+      .line{fill:none;stroke:#94a3b8;stroke-width:2.5}.tag{font-size:14px;fill:#64748b}
+    </style>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#94a3b8"/></marker>
+  </defs>
+  <rect class="bg" width="1200" height="680" rx="24"/>
+  <text class="title" x="60" y="58">先找瓶颈，再选注意力方案</text>
+  <text class="sub" x="60" y="90">这些方法改变的对象不同，可以组合，也需要分别验证代价。</text>
+
+  <path class="line" marker-end="url(#arrow)" d="M510 308 C430 270,405 205,360 185"/>
+  <path class="line" marker-end="url(#arrow)" d="M510 342 C420 350,405 355,360 355"/>
+  <path class="line" marker-end="url(#arrow)" d="M510 378 C430 430,410 505,360 535"/>
+  <path class="line" marker-end="url(#arrow)" d="M690 318 C770 275,790 210,840 185"/>
+  <path class="line" marker-end="url(#arrow)" d="M690 370 C775 420,790 510,840 535"/>
+
+  <rect class="center" x="500" y="285" width="200" height="120" rx="22"/>
+  <text class="centerText" x="600" y="335">注意力瓶颈</text>
+  <text class="centerText" x="600" y="370">在哪里？</text>
+
+  <rect class="card" x="60" y="115" width="300" height="140" rx="18" stroke="#2563eb"/>
+  <text class="head" x="86" y="151" fill="#1d4ed8">连接太多</text>
+  <text class="body" x="86" y="184">局部 / 滑动窗口 / 块稀疏</text>
+  <text class="body" x="86" y="214">代价：限制直接信息通路</text>
+  <text class="tag" x="86" y="239">改变连接范围</text>
+
+  <rect class="card" x="60" y="285" width="300" height="140" rx="18" stroke="#7c3aed"/>
+  <text class="head" x="86" y="321" fill="#6d28d9">完整计算太贵</text>
+  <text class="body" x="86" y="354">低秩投影 / 核函数近似</text>
+  <text class="body" x="86" y="384">代价：引入近似误差</text>
+  <text class="tag" x="86" y="409">改变计算形式</text>
+
+  <rect class="card" x="60" y="465" width="300" height="140" rx="18" stroke="#0891b2"/>
+  <text class="head" x="86" y="501" fill="#0e7490">KV cache 太大</text>
+  <text class="body" x="86" y="534">GQA / MQA</text>
+  <text class="body" x="86" y="564">代价：更多查询头共享 K、V</text>
+  <text class="tag" x="86" y="589">改变 KV 参数化</text>
+
+  <rect class="card" x="840" y="115" width="300" height="140" rx="18" stroke="#ea580c"/>
+  <text class="head" x="866" y="151" fill="#c2410c">位置关系不足</text>
+  <text class="body" x="866" y="184">相对位置偏置 / RoPE</text>
+  <text class="body" x="866" y="214">代价：长度外行为仍需验证</text>
+  <text class="tag" x="866" y="239">改变位置信息注入</text>
+
+  <rect class="card" x="840" y="465" width="300" height="140" rx="18" stroke="#16a34a"/>
+  <text class="head" x="866" y="501" fill="#15803d">显存读写太多</text>
+  <text class="body" x="866" y="534">分块 / 融合 / FlashAttention</text>
+  <text class="body" x="866" y="564">约束：收益依赖硬件与形状</text>
+  <text class="tag" x="866" y="589">优化执行，不删连接</text>
+</svg>

@@ -1,304 +1,152 @@
-# 第4章扩展：注意力机制的变种
+# 第 4 章扩展：注意力机制的变体
 
-**版本：** v2.0  
-**最后更新：** 2026-05-26
+标准注意力并不是所有场景的唯一选择。所谓“注意力变体”，通常是在调整以下某一项：哪些位置可以连接、如何计算相似度、多少查询头共享键和值、怎样表示位置，或者怎样在硬件上执行同一个计算。
 
-本文档包含第4章的深度扩展内容，介绍注意力机制的各种变种和优化。
+![注意力优化路线图](/diagrams/ch04-attention-optimization-map.svg)
 
----
+*图 E4.1：先确定瓶颈，再选择注意力方案。不同分支解决的问题不同，不能只按“更快”或“更强”排列。*
 
-## E4.1 注意力机制的数学基础
+## E4.1 先分清五类改动
 
-### 注意力的本质
+| 改动维度 | 代表方法 | 主要目标 | 是否改变标准注意力的连接或结果 |
+| --- | --- | --- | --- |
+| 连接范围 | 局部、滑动窗口、块稀疏、全局 token | 降低长序列计算量 | 改变连接范围 |
+| 数值近似 | 低秩投影、核函数近似 | 避免显式构造完整注意力矩阵 | 通常是近似计算 |
+| KV 共享 | MQA、GQA | 减少解码时的 KV cache 和内存带宽 | 改变参数化方式 |
+| 位置信息 | 相对位置偏置、RoPE | 让注意力分数包含顺序或相对距离 | 改变位置注入方式 |
+| 执行方式 | 分块、融合算子、FlashAttention | 减少显存读写和中间结果 | 数学结果保持等价或近似等价 |
 
-**注意力就是加权求和：**
-$$\text{Attention}(Q, K, V) = \sum_i w_i v_i$$
+这五类方法可以组合。例如，一个生成模型可以同时使用 RoPE、GQA 和 FlashAttention：三者分别处理位置、KV cache 和硬件执行问题。
 
-其中权重 $w_i$ 由查询和键的相似度决定。
+## E4.2 相似度与掩码
 
-### 不同的相似度函数
+注意力的共同结构是“根据查询与键计算权重，再对值加权求和”：
 
-**点积注意力（Dot-Product Attention）：**
-$$w_i = \text{softmax}\left(\frac{q \cdot k_i}{\sqrt{d_k}}\right)$$
+$$
+\operatorname{Attention}(Q,K,V)
+=\operatorname{softmax}(S+M)V,
+$$
 
-**加法注意力（Additive Attention）：**
-$$w_i = \text{softmax}(v^T \tanh(W_q q + W_k k_i))$$
+其中 $S$ 是相似度分数，$M$ 是可选掩码。
 
-**乘法注意力（Multiplicative Attention）：**
-$$w_i = \text{softmax}(q^T W k_i)$$
+缩放点积注意力使用：
 
-**优点对比：**
-- 点积：计算快，内存高效
-- 加法：表达能力强，但计算慢
-- 乘法：平衡两者
+$$
+S=\frac{QK^\top}{\sqrt{d_k}}.
+$$
 
----
+加法注意力和双线性注意力只是换了一种分数函数：
 
-## E4.2 高效Transformer
+$$
+s(q,k)=v^\top\tanh(W_q q+W_k k),
+\qquad
+s(q,k)=q^\top Wk.
+$$
 
-### 问题：二次复杂度
+不能脱离模型规模、硬件和任务断言某个分数函数一定“更强”。Transformer 常用缩放点积，是因为它可以高效地写成矩阵乘法。
 
-标准Transformer的注意力复杂度是 $O(n^2)$，其中 $n$ 是序列长度。
+自回归生成还需要因果掩码：
 
-**对于长序列很贵：**
-- 序列长度1000：100万次操作
-- 序列长度10000：1亿次操作
+$$
+M_{ij}=\begin{cases}
+0,&j\le i,\\
+-\infty,&j>i.
+\end{cases}
+$$
 
-### 解决方案1：稀疏注意力
+它禁止位置 $i$ 读取未来 token。因果掩码解决的是信息泄漏，不是计算加速。
 
-**思想：** 不是每个位置都关注所有位置，只关注相关位置。
+## E4.3 改变连接范围：局部与稀疏注意力
 
-**方法：**
-- **局部注意力**：只关注附近的位置
-- **步长注意力**：每隔k个位置关注一次
-- **块对角注意力**：分块处理
+完整自注意力让每个位置连接全部 $n$ 个位置，分数矩阵有 $n^2$ 个元素。局部或稀疏注意力只保留部分连接，例如：
 
-**复杂度：** $O(n \log n)$ 或 $O(n)$
+- 滑动窗口：每个位置只读取附近 $w$ 个位置；
+- 分块连接：先在块内计算，再通过少量跨块连接交换信息；
+- 全局 token：为少数位置保留全局读写能力。
 
-### 解决方案2：低秩近似
+若每个位置只连接 $w$ 个位置，注意力分数计算量约为 $O(nw)$。但实际速度还取决于稀疏模式能否被硬件和算子有效利用。
 
-**思想：** 注意力矩阵可以用低秩矩阵近似。
+代价也很直接：没有连接的两个位置不能在这一层直接交换信息。选择稀疏模式时，应检查任务所需的远距离依赖能否通过多层传播或全局连接到达。
 
-**方法：**
-- **Linformer**：用线性投影降维
-- **Performer**：用随机特征近似softmax
+## E4.4 近似注意力：低秩与核方法
 
-**复杂度：** $O(n)$
+另一条路线是不删除连接，而是近似注意力计算。例如：
 
-### 解决方案3：分层注意力
+- 低秩方法把序列维投影到更小的维度；
+- 核方法改写或近似 softmax 相似度，使计算顺序可以重排。
 
-**思想：** 先在局部做注意力，再在全局做注意力。
+这些方法的复杂度取决于投影维度、特征数和具体实现，不能统一写成无条件的 $O(n)$。近似误差也可能随序列长度、数据分布和任务变化，因此至少要同时比较：任务指标、峰值显存、吞吐量和目标长度下的稳定性。
 
-**例子：**
-- **Longformer**：局部 + 全局注意力
-- **BigBird**：块对角 + 全局注意力
+## E4.5 改变 KV 共享：MHA、GQA 与 MQA
 
----
+设查询头数为 $h_q$，键值头数为 $h_{kv}$：
 
-## E4.3 多查询注意力（Multi-Query Attention）
+- 多头注意力（MHA）：通常 $h_{kv}=h_q$；
+- 分组查询注意力（GQA）：$1<h_{kv}<h_q$；
+- 多查询注意力（MQA）：$h_{kv}=1$。
 
-### 问题
+多个查询头共享同一组键和值，可以减少自回归解码时需要保存和读取的 KV cache。若其他维度不变，KV cache 中键和值的规模会大致按 $h_{kv}/h_q$ 缩减；这不等于整个模型参数量按同样比例缩减。
 
-标准多头注意力中，每个头都有独立的键和值投影，导致参数多、内存占用大。
+共享越多，缓存越小，但模型表达和训练结果是否保持，需要通过目标任务验证。GQA 提供的是共享粒度的中间选项，不保证在所有模型上都优于 MHA 或 MQA。
 
-### 解决方案
+## E4.6 注入位置信息：相对偏置与 RoPE
 
-**多查询注意力：** 所有头共享同一个键和值。
+注意力本身不包含 token 顺序。相对位置偏置直接把距离相关项加入分数：
 
-$$\text{MQA}(Q, K, V) = \text{Concat}(\text{head}_1, ..., \text{head}_h) W^O$$
+$$
+S_{ij}=\frac{q_i^\top k_j}{\sqrt{d_k}}+b(i-j).
+$$
 
-其中所有 $\text{head}_i$ 使用同一个 $K$ 和 $V$。
+RoPE 则在计算点积前，对查询和键的二维分量施加与位置相关的旋转。以一个二维分量对为例：
 
-### 优势
+$$
+R_m=
+\begin{bmatrix}
+\cos(m\theta)&-\sin(m\theta)\\
+\sin(m\theta)&\cos(m\theta)
+\end{bmatrix},
+\qquad
+q_m'=R_mq_m,\quad k_n'=R_nk_n.
+$$
 
-- 参数减少 $h$ 倍
-- 内存占用减少
-- 推理速度快
-- 性能基本不变
+由于 $R_m^\top R_n=R_{n-m}$，旋转后的点积包含相对位移 $n-m$。这解释了 RoPE 如何把相对位置信息带入分数，但不意味着模型无需验证就能稳定处理任意超出训练范围的长度。
 
-### 应用
+## E4.7 优化执行：FlashAttention
 
-- **PaLM**：Google的大模型
-- **Falcon**：开源大模型
+普通实现可能把完整分数矩阵和 softmax 中间结果反复写入显存。FlashAttention 通过分块计算、在线 softmax 和算子融合，减少高带宽显存与片上存储之间的数据搬运。
 
----
+它优化的是同一个注意力计算的执行过程，不是把完整注意力改成稀疏注意力。加速比例取决于序列长度、数据类型、硬件、掩码和实现版本，因此应在目标环境中实测，而不是使用固定倍数。
 
-## E4.4 因果注意力（Causal Attention）
+## E4.8 如何选择
 
-### 问题
+先记录瓶颈，再选择对应改动：
 
-在生成任务中，模型不应该看到未来的token。
+1. 训练时分数矩阵过大：考虑局部、稀疏或近似注意力。
+2. 自回归解码的 KV cache 或带宽成为瓶颈：考虑 GQA 或 MQA。
+3. 数学结构不想改变，但显存读写开销高：考虑 FlashAttention 一类的精确执行优化。
+4. 任务依赖顺序、距离或长度变化：比较位置编码方案，并单独测试训练长度外的行为。
 
-### 解决方案
+比较方案时固定模型规模、输入长度、批量大小和精度，至少记录任务指标、峰值显存、训练吞吐和解码延迟。只有这些条件一致，“更快”或“更省”才有可比性。
 
-**因果掩码：** 在计算注意力权重前，把未来位置的分数设为 $-\infty$。
+## 最低实践任务
 
-$$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}} + M\right) V$$
+在第 4 章已有自注意力实现上完成以下实验：
 
-其中 $M_{ij} = -\infty$ 如果 $i < j$（未来位置）。
+1. 加入因果掩码，检查注意力矩阵上三角是否为零；
+2. 将完整注意力改为窗口大小为 $w$ 的局部注意力；
+3. 对两个版本分别记录允许连接的元素数，并解释它为何从 $n^2$ 变为约 $nw$；
+4. 不要求给出速度结论；若测量运行时间，必须同时写出设备、序列长度、批量大小和预热次数。
 
-### 实现
+完成标准是：能够指出自己改动的是连接范围，而不是 KV 共享、位置编码或执行内核。
 
-```python
-# 创建因果掩码
-mask = torch.tril(torch.ones(seq_len, seq_len))
-scores = scores.masked_fill(mask == 0, float('-inf'))
-```
+## 延伸阅读
 
----
-
-## E4.5 相对位置编码
-
-### 问题
-
-绝对位置编码有局限：
-- 对于超长序列，位置编码可能超出范围
-- 模型难以泛化到训练时没见过的长度
-
-### 解决方案
-
-**相对位置编码：** 编码位置之间的相对距离，而不是绝对位置。
-
-$$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T + R}{\sqrt{d_k}}\right) V$$
-
-其中 $R$ 是相对位置偏置。
-
-### 优势
-
-- 可以泛化到更长的序列
-- 更符合人类的相对位置理解
-
-### 应用
-
-- **T5**：Google的预训练模型
-- **DeBERTa**：微软的预训练模型
+- Vaswani et al., *Attention Is All You Need*：缩放点积注意力与多头注意力。
+- Shaw et al., *Self-Attention with Relative Position Representations*：相对位置表示。
+- Su et al., *RoFormer*：旋转位置编码。
+- Shazeer, *Fast Transformer Decoding: One Write-Head is All You Need*：MQA。
+- Dao et al., *FlashAttention*：面向 IO 的精确注意力实现。
 
 ---
 
-## E4.6 旋转位置编码（RoPE）
-
-### 思想
-
-用复数旋转编码位置。
-
-$$PE(pos, 2i) = \cos(pos \cdot \theta_i)$$
-$$PE(pos, 2i+1) = \sin(pos \cdot \theta_i)$$
-
-其中 $\theta_i = 10000^{-2i/d}$。
-
-### 优势
-
-- 自然的相对位置编码
-- 可以外推到更长的序列
-- 计算高效
-
-### 应用
-
-- **LLaMA**：Meta的大模型
-- **Falcon**：开源大模型
-
----
-
-## E4.7 分组查询注意力（Grouped Query Attention）
-
-### 思想
-
-介于多头注意力和多查询注意力之间。
-
-**多头注意力：** 每个查询头有独立的K、V  
-**分组查询注意力：** 多个查询头共享一个K、V  
-**多查询注意力：** 所有查询头共享一个K、V
-
-### 优势
-
-- 比多头注意力参数少
-- 比多查询注意力表达能力强
-- 性能和效率的平衡
-
-### 应用
-
-- **Llama 2**：Meta的改进版大模型
-
----
-
-## E4.8 闪电注意力（Flash Attention）
-
-### 问题
-
-标准注意力实现在GPU上不高效：
-- 需要多次访问内存
-- 内存带宽是瓶颈
-
-### 解决方案
-
-**Flash Attention：** 重新组织计算，减少内存访问。
-
-**关键思想：**
-1. 分块计算注意力
-2. 在GPU高速缓存中完成计算
-3. 减少全局内存访问
-
-### 性能提升
-
-- 速度快2-4倍
-- 内存占用减少
-- 精度不变
-
-### 应用
-
-- **PyTorch 2.0**：官方支持
-- **Hugging Face Transformers**：集成支持
-
----
-
-## E4.9 推荐论文
-
-### 注意力机制的经典论文
-
-1. **Vaswani et al. (2017)** - "Attention Is All You Need"
-   - Transformer的原始论文
-   - 引入多头自注意力
-
-2. **Bahdanau et al. (2014)** - "Neural Machine Translation by Jointly Learning to Align and Translate"
-   - 注意力机制的开创性工作
-
-### 高效Transformer的论文
-
-1. **Kitaev et al. (2020)** - "Reformer: The Efficient Transformer"
-   - 局部敏感哈希注意力
-
-2. **Choromanski et al. (2020)** - "Rethinking Attention with Performers"
-   - 用随机特征近似softmax
-
-3. **Dao et al. (2022)** - "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness"
-   - Flash Attention的论文
-
-### 位置编码的论文
-
-1. **Su et al. (2021)** - "RoFormer: Enhanced Transformer with Rotary Position Embedding"
-   - 旋转位置编码
-
-2. **Shaw et al. (2018)** - "Self-Attention with Relative Position Representations"
-   - 相对位置编码
-
----
-
-## E4.10 进一步学习
-
-### 书籍
-
-- **"Attention Is All You Need" 论文详解**
-  - 很多博客和教程详细讲解
-  - 推荐 Jay Alammar 的可视化讲解
-
-- **"The Illustrated Transformer"**
-  - 在线免费资源
-  - 非常直观的讲解
-
-### 在线资源
-
-- **Stanford CS224N** - NLP with Deep Learning
-- **CMU 11-747** - Neural Language Models
-- **Hugging Face Course** - NLP with Transformers
-
-### 实践项目
-
-1. **实现自注意力**
-   - 从零开始实现
-   - 理解每一步的计算
-
-2. **实现多头注意力**
-   - 理解多头的作用
-   - 对比单头和多头的性能
-
-3. **实现完整Transformer**
-   - 编码器-解码器结构
-   - 在简单任务上训练
-
-4. **优化注意力**
-   - 实现Flash Attention
-   - 测试性能提升
-
----
-
-**返回：** [第4章：Transformer详解](../README.md)
+**返回：** [第 4 章：Transformer 详解](../README.md)
