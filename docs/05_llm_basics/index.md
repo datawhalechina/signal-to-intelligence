@@ -2,25 +2,33 @@
 
 # 第5章：LLM基础
 
-**版本：** v3.0
-**最后更新：** 2026-05-30
-
 ## 章节概览
 
 本章回答一个核心问题：**LLM 是怎么从文本数据训练成可用助手的？**
 
+![LLM 从预测到生成的统一链路](/diagrams/ch05-llm-prediction-generation.svg)
+
+*章节主图：LLM 的统一工作链路。训练和生成共享“表示—注意力—概率预测”主干，只是在监督信号和下一步输入来源上不同。*
+
 本章主线不是记住模型名称，而是理解一条训练闭环：**分词 → 预训练 → 数据配比 → 基础模型 → 微调 → 对齐 → 评估**。模型家族放在这条链路中作为案例，用来解释不同训练选择如何影响能力、成本和可用性。
 
-## 快速导航
+## 统一关系：表示、注意力、预测与生成
 
-| 章节 | 文件 | 难度 | 时间 |
-|------|------|------|------|
-| 5.1 预训练 | [01_pretraining.md](01_pretraining.md) | ⭐⭐ | 15分钟 |
-| 5.2 训练数据 | [02_training_data.md](02_training_data.md) | ⭐⭐ | 10分钟 |
-| 5.3 主流模型家族 | [03_model_families.md](03_model_families.md) | ⭐⭐ | 10分钟 |
-| 5.4 微调 | [04_finetuning.md](04_finetuning.md) | ⭐⭐⭐ | 15分钟 |
-| 5.5 强化学习对齐 | [05_rl_alignment.md](05_rl_alignment.md) | ⭐⭐⭐ | 15分钟 |
-| 5.6 模型评估 | [06_evaluation.md](06_evaluation.md) | ⭐⭐⭐ | 10分钟 |
+第 4 章的注意力机制解决“当前表示应该从哪些位置聚合信息”；本章的预训练则解决“如何通过预测目标把这种信息处理能力学出来”。四个概念可以统一为一条链：
+
+```text
+信息表示：文本 → token → embedding → 上下文隐藏状态
+    ↓
+信息交互：注意力根据内容动态聚合上下文
+    ↓
+概率预测：对下一个 token 的可能性进行估计
+    ↓
+序列生成：把预测出的 token 放回上下文，重复上述过程
+```
+
+因此，LLM 并不是先“理解”再“生成”两个完全分开的模块。它在每个位置都根据已有上下文形成表示、估计下一个 token 的分布，并在自回归循环中把预测转化为输出。训练时，真实下一个 token 提供监督；生成时，模型自己的输出成为下一步输入。
+
+从信息处理角度看：Embedding 负责把离散对象变成可计算表示，Attention 负责选择性聚合，输出层负责概率估计，采样策略负责在不确定性下作出生成决策。这个统一视角也能帮助理解第 6 章的 Prompt、微调、RAG 和 Agent：它们主要改变输入信息、模型参数或外部反馈，而不是改变这条基本生成链。
 
 ## 小节目录
 
@@ -31,47 +39,38 @@
 - Token Embedding：从离散符号到连续向量
 - Decoder-only 架构为什么赢了
 - 预训练目标：下一词预测
-- Scaling Laws 与涌现能力
+- Scaling Laws 与非线性评测变化
 - GPT 系列演化
 
 **5.2 训练数据** — [📖 阅读](02_training_data.md)
-- 数据来源与流行数据集（Common Crawl、The Pile、Alpaca、HH-RLHF）
-- 数据清洗：去重、质量过滤、有害内容过滤
-- 数据配比对模型能力的影响
-- 数据质量、覆盖范围与配比（Phi 系列的启示）
+- 数据来源、许可与版本记录
+- 去重、质量过滤和评测污染检查
+- 用固定预算的消融实验调整数据配比
 
 ### 基础模型与适配（5.3-5.4）
 
-**5.3 主流模型家族** — [📖 阅读](03_model_families.md)
-- 模型家族作为训练路线和工程取舍的案例
-- GPT / LLaMA / Qwen / Mistral / DeepSeek / Claude / Gemini 的演化主线
-- 开源 vs 闭源：能力、隐私、成本、可控性和维护责任
+**5.3 模型家族与选型** — [📖 阅读](03_model_families.md)
+- Decoder-only、Encoder-Decoder、稠密与 MoE 路线
+- 基础模型、指令模型和专用模型
+- 自部署权重与托管 API 的工程约束
 
-**5.4 微调** — [📖 阅读](04_finetuning.md)
-- SFT：指令微调的原理
-- LoRA：低秩分解降低微调成本
-- 如何选择基础模型与微调策略
-- 对齐 SFT vs 任务微调的区别
+**5.4 微调与 LoRA** — [📖 阅读](04_finetuning.md)
+- SFT 的数据与损失
+- LoRA 的参数结构与适用边界
+- 如何判断 Prompt、RAG 或微调更匹配当前瓶颈
 
 ### 对齐与评估（5.5-5.6）
 
-**5.5 强化学习对齐** — [📖 阅读](05_rl_alignment.md)
-- 为什么预训练模型不能直接用
-- 奖励模型：量化人类偏好
-- RLHF：PPO 优化奖励
-- DPO：更简单的对齐方法
+**5.5 偏好对齐** — [📖 阅读](05_rl_alignment.md)
+- SFT、奖励模型与策略优化的分工
+- RLHF 的 KL 约束与工程成本
+- DPO 的假设、流程和评测边界
 
 **5.6 模型评估** — [📖 阅读](06_evaluation.md)
 - 为什么评估 LLM 很难
 - 主流 Benchmark（MMLU、HumanEval、GSM8K、MT-Bench）
 - 人工评估与 Chatbot Arena
 - Goodhart's Law：Benchmark 刷分问题
-
-## 学习时间
-
-- **快速版**（仅阅读正文）：40分钟
-- **标准版**（包含代码实验）：75分钟
-- **完整版**（包含扩展内容）：120分钟
 
 ## 核心问题
 
@@ -83,9 +82,20 @@
 4. 训练数据的质量和配比如何影响模型能力？
 5. 为什么模型家族应该作为训练路线案例，而不是学习结构中心？
 6. SFT 学到的是知识还是行为模式？
-7. LoRA 为什么能大幅降低微调成本？
+7. LoRA 减少了哪些参数与存储成本，哪些成本仍然存在？
 8. RLHF 和 DPO 有什么区别？
 9. 如何评估一个 LLM？Benchmark 的局限是什么？
+
+## 本章学习闭环
+
+1. 用章节主图区分表示、注意力、概率预测和逐 token 生成；
+2. 运行 `bpe_tokenization.py`、`autoregressive_generation.py` 或 `lora_visualization.py` 中的一个实验；
+3. 完成最低实践任务，用这四个词解释参数变化发生在哪一层；
+4. 进入第 6 章时，继续判断 Prompt、微调、RAG、Agent 分别改变输入、参数、上下文或执行流程中的哪一部分。
+
+## 最低实践任务
+
+使用本章的 BPE、采样或 LoRA 可视化实验，改变一个关键参数并记录结果；再用“表示—注意力—预测—生成”四个词解释变化发生在哪一层。完成标准：能区分训练阶段的 next-token prediction 与生成阶段的逐步采样。
 
 ## 代码实验
 
@@ -94,7 +104,7 @@
 | 小节 | 脚本 | 内容 |
 |------|------|------|
 | 5.1 | [`bpe_tokenization.py`](../../code/ch05_llm_basics/bpe_tokenization.py) | BPE 算法实现，展示词表合并过程 |
-| 5.1 | [`scaling_laws.py`](../../code/ch05_llm_basics/scaling_laws.py) | 幂律拟合（真实数据），涌现能力可视化 |
+| 5.1 | [`scaling_laws.py`](../../code/ch05_llm_basics/scaling_laws.py) | 幂律拟合与离散指标的阈值现象 |
 | 5.1 | [`autoregressive_generation.py`](../../code/ch05_llm_basics/autoregressive_generation.py) | 5种采样策略对比（temperature/top-k/top-p） |
 | 5.2 | [`training_data_composition.py`](../../code/ch05_llm_basics/training_data_composition.py) | 数据构成饼图、各阶段数据量、Phi 效率对比 |
 | 5.3 | [`model_families_evolution.py`](../../code/ch05_llm_basics/model_families_evolution.py) | 模型家族时间线气泡图、开源 vs 闭源对比 |
@@ -103,61 +113,12 @@
 | 5.6 | [`benchmark_comparison.py`](../../code/ch05_llm_basics/benchmark_comparison.py) | 主流模型基准对比、Chatbot Arena ELO 排行 |
 | 5.1-5.5 | [`llm_api_demo.py`](../../code/ch05_llm_basics/llm_api_demo.py) | API 调用、ICL 演示、Prompt 对比（需 API Key） |
 
-## 推荐学习路径
-
-### 路径1：快速入门（40分钟）
-- 阅读 5.1-5.3 的正文
-- 理解分词 → 预训练 → 数据 → 基础模型的主线
-- 重点：Scaling Laws、数据配比、开源/闭源取舍
-
-### 路径2：标准学习（75分钟）
-- 阅读所有正文（5.1-5.6）
-- 运行 BPE、Scaling Laws、LoRA 实验
-- 回答"核心问题"中的 9 个问题
-
-### 路径3：深度学习（120分钟）
-- 阅读所有正文和扩展内容
-- 深入理解 RLHF/DPO 的数学细节
-- 阅读 GPT-3、LLaMA、Chinchilla 原始论文
-
-## 关键概念速查
-
-| 概念 | 核心思想 | 章节 |
-|------|---------|------|
-| BPE | 字节对编码，在字符和单词之间取平衡 | 5.1 |
-| Decoder-only | 因果掩码 + 自回归生成，训练目标统一 | 5.1 |
-| Scaling Laws | 性能 ∝ 模型大小/数据量/计算量的幂律关系 | 5.1 |
-| Chinchilla 定律 | 最优数据量 ≈ 20 × 参数量 | 5.1 |
-| 涌现能力 | 规模超过阈值后突然出现的新能力 | 5.1 |
-| 数据配比 | 不同来源数据的比例影响模型能力 | 5.2 |
-| SFT | 用指令-回答对微调，调整行为模式 | 5.4 |
-| LoRA | 低秩适配器，只训练 0.1-1% 参数 | 5.4 |
-| RLHF | 奖励模型 + PPO，用人类偏好优化模型 | 5.5 |
-| DPO | 直接从偏好数据训练，不需要单独奖励模型 | 5.5 |
-
-## 常见问题
-
-**Q: Tokenization 为什么不直接用字符或单词？**
-A: 字符级序列太长（注意力计算代价 O(n²)）；单词级词表太大且无法处理新词。BPE 在两者之间取平衡。
-
-**Q: 预训练模型和微调模型有什么区别？**
-A: 预训练模型学到通用语言能力，微调模型在此基础上适配特定任务。对齐（SFT/RLHF）是特殊的微调，目的是改变行为模式而非适配任务。
-
-**Q: 开源模型和闭源模型哪个更好？**
-A: 取决于需求。闭源 API 通常验证快、能力上限高；开源模型可控性更强、数据可留在本地，也更适合定制和私有部署。
-
-**Q: RLHF 和 DPO 哪个更好？**
-A: DPO 更简单（不需要单独训练奖励模型），但 RLHF 在某些场景下效果更好。实践中两者都在使用，DPO 因为简单而越来越流行。
-
-**Q: Benchmark 分数高就代表模型好吗？**
-A: 不一定。Benchmark 可能被刷分（数据污染、针对性优化）。需要结合多个 Benchmark 和人工评估（Chatbot Arena）综合判断。
-
 ## 扩展内容
 
 ### LLM 训练深度细节 — [📖 阅读](extensions/llm_training_details.md)
 - 预训练的具体过程（数据准备、分词、训练配置）
 - Scaling Laws 的数学基础
-- 涌现能力的机制与 LLM 的局限
+- 规模效应、指标阈值与 LLM 的局限
 
 ### 对齐训练深度细节 — [📖 阅读](extensions/alignment_details.md)
 - PPO 在 RLHF 中的 4 步循环与 clip 操作

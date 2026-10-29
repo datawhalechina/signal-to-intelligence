@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 560" role="img" aria-labelledby="title desc">
+  <title id="title">模型评估证据链</title>
+  <desc id="desc">评估从任务和成功条件开始，经过固定样本与配置、自动指标与人工复核、运行指标，最终形成带边界的选型或上线决定；错误分析反馈到任务和数据。</desc>
+  <style>
+    text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;fill:#172033}
+    .t{font-size:27px;font-weight:700}.n{font-size:20px;font-weight:700}.s{font-size:15px;fill:#526076}.tag{font-size:14px;font-weight:700}
+    .a{stroke:#7b879d;stroke-width:3;fill:none;marker-end:url(#arrow)}.feedback{stroke:#dc6b2f;stroke-width:3;fill:none;stroke-dasharray:9 7;marker-end:url(#arrow-orange)}
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3z" fill="#7b879d"/></marker>
+    <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3z" fill="#dc6b2f"/></marker>
+  </defs>
+  <rect width="1440" height="560" rx="24" fill="#f8fafc"/>
+  <text x="60" y="58" class="t">模型评估不是一个分数，而是一条可追溯的证据链</text>
+
+  <g transform="translate(60 125)">
+    <rect width="220" height="142" rx="16" fill="#dbeafe"/>
+    <text x="22" y="42" class="n">1 任务定义</text>
+    <text x="22" y="76" class="s">输入、输出、成功条件</text>
+    <text x="22" y="103" class="s">风险与不可接受错误</text>
+  </g>
+  <g transform="translate(330 125)">
+    <rect width="220" height="142" rx="16" fill="#e0e7ff"/>
+    <text x="22" y="42" class="n">2 固定实验</text>
+    <text x="22" y="76" class="s">数据切分与样本版本</text>
+    <text x="22" y="103" class="s">模型、Prompt、解码配置</text>
+  </g>
+  <g transform="translate(600 125)">
+    <rect width="250" height="142" rx="16" fill="#ede9fe"/>
+    <text x="22" y="42" class="n">3 质量证据</text>
+    <text x="22" y="76" class="s">自动指标 + 置信区间</text>
+    <text x="22" y="103" class="s">人工盲评 + 错误分类</text>
+  </g>
+  <g transform="translate(900 125)">
+    <rect width="220" height="142" rx="16" fill="#ffedd5"/>
+    <text x="22" y="42" class="n">4 运行证据</text>
+    <text x="22" y="76" class="s">延迟、吞吐、失败率</text>
+    <text x="22" y="103" class="s">显存、并发与成本</text>
+  </g>
+  <g transform="translate(1170 125)">
+    <rect width="210" height="142" rx="16" fill="#dcfce7"/>
+    <text x="22" y="42" class="n">5 决策</text>
+    <text x="22" y="76" class="s">选型 / 上线 / 回退</text>
+    <text x="22" y="103" class="s">记录适用边界</text>
+  </g>
+
+  <path d="M281 196H321M551 196H591M851 196H891M1121 196H1161" class="a"/>
+
+  <g transform="translate(255 345)">
+    <rect width="930" height="88" rx="16" fill="#fff7ed" stroke="#fdba74" stroke-width="2"/>
+    <text x="28" y="36" class="n">错误分析</text>
+    <text x="148" y="36" class="s">按任务、语言、长度、风险和失败原因分组，不只看平均分</text>
+    <text x="148" y="64" class="s">发现覆盖缺口后，回到任务定义、样本或系统方案重新验证</text>
+  </g>
+  <path d="M1275 270 C1275 320,1160 320,1160 344" class="feedback"/>
+  <path d="M255 388 C150 388,150 290,170 275" class="feedback"/>
+
+  <rect x="60" y="482" width="1320" height="42" rx="12" fill="#eef2f7"/>
+  <text x="82" y="509" class="tag">不能省略：</text>
+  <text x="188" y="509" class="s">样本数、版本、指标定义、运行条件、原始输出与已知局限；公开 Benchmark 不能替代目标任务评测。</text>
+</svg>
