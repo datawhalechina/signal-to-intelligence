@@ -65,6 +65,7 @@ class TestAgentFramework:
         agent_demo = load_code_module("code/ch06_llm_applications/agent_demo.py")
 
         assert agent_demo.calculate("2 + 2") == "4"
+        assert "计算错误" in agent_demo.calculate("__import__('os').getcwd()")
 
     def test_agent_run_experiment(self, load_code_module):
         agent_demo = load_code_module("code/ch06_llm_applications/agent_demo.py")
@@ -75,7 +76,8 @@ class TestAgentFramework:
         )
 
         assert result["answer1"] == expected_answer
-        assert "7 亿" in result["answer2"]
+        assert "4,194,304" in result["answer2"]
+        assert all("rationale" in item for item in result["transcript2"])
         assert len(result["transcript1"]) >= 1
         assert len(result["transcript2"]) >= 2
         assert result["chart"]["steps"] == list(range(1, 11))
@@ -88,6 +90,7 @@ class TestPromptAndSystemDesign:
         prompt_demo = load_code_module("code/ch06_llm_applications/prompt_demo.py")
         result = prompt_demo.run_experiment()
 
+        assert result["data_kind"] == "illustrative_scenario"
         assert len(result["tasks"]) == 4
         assert result["zero_shot"].shape == (4,)
         assert result["few_shot"].shape == (4,)
@@ -100,6 +103,7 @@ class TestPromptAndSystemDesign:
         system_design = load_code_module("code/ch06_llm_applications/system_design_demo.py")
         result = system_design.run_experiment()
 
+        assert result["data_kind"] == "illustrative_profiles"
         assert len(result["categories"]) == 6
         assert set(result["approaches"]) == {"Prompt", "Fine-tuning", "RAG", "Agent"}
         assert result["setup_cost"].shape == (4,)

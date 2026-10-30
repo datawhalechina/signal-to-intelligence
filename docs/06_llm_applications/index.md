@@ -101,11 +101,11 @@
 
 | 小节 | 脚本 | 生成图表 | 内容 |
 |------|------|---------|------|
-| 6.1 Prompt 工程 | [`prompt_demo.py`](../../code/ch06_llm_applications/prompt_demo.py) | `ch06_prompt_techniques.png` | Zero-shot/Few-shot/CoT 对比、成本-效果权衡、迭代优化流程 |
+| 6.1 Prompt 工程 | [`prompt_demo.py`](../../code/ch06_llm_applications/prompt_demo.py) | `ch06_prompt_techniques.png` | 用示意分数解释策略差异与迭代流程，不是模型 Benchmark |
 | 6.2 微调 | [`finetuning_demo.py`](../../code/ch06_llm_applications/finetuning_demo.py) | `ch06_lora_parameters.png` | 全量微调 vs LoRA 参数量对比 |
-| 6.3 RAG | [`rag_demo.py`](../../code/ch06_llm_applications/rag_demo.py) | `ch06_rag_vector_search.png` | 向量检索语义空间可视化 |
+| 6.3 RAG | [`rag_demo.py`](../../code/ch06_llm_applications/rag_demo.py) | `ch06_rag_vector_search.png` | 可运行的字符 n-gram 词法向量基线 + 手工二维 embedding 几何示意 |
 | 6.4 Agent | [`agent_demo.py`](../../code/ch06_llm_applications/agent_demo.py) | `ch06_agent_error_accumulation.png` | ReAct 循环 + 错误累积曲线 |
-| 6.5 系统设计 | [`system_design_demo.py`](../../code/ch06_llm_applications/system_design_demo.py) | `ch06_system_design.png` | 四方案雷达图、决策树、成本对比 |
+| 6.5 系统设计 | [`system_design_demo.py`](../../code/ch06_llm_applications/system_design_demo.py) | `ch06_system_design.png` | 基于显式场景假设的四方案示意，不构成通用排名 |
 
 **运行方式：**
 ```bash
@@ -146,18 +146,18 @@ python code/ch06_llm_applications/system_design_demo.py
 
 ```
 通用 LLM（第5章）
-    ├─ Prompt 工程 → 零成本适配
-    ├─ 微调（LoRA）→ 领域专用模型
-    ├─ RAG → 知识增强模型
-    └─ Agent → 工具使用模型
+    ├─ Prompt 工程 → 改变输入与约束
+    ├─ 微调（LoRA）→ 学习稳定任务行为
+    ├─ RAG → 在推理时提供外部证据
+    └─ Agent → 动态选择工具与行动
 ```
 
 ### Embedding → 外部信息整合
 
 ```
-第5章：token embedding（语义向量）
-    ↓ 同样的思想
-RAG：文档 embedding → 向量检索 → 找相关文档
+第5章：token embedding（离散 token 的向量表示）
+    ↓ 共享“映射到向量空间”的思想，但训练目标和粒度不同
+RAG：检索 embedding → 向量检索 → 找相关文档
 其他应用：相似度、聚类、跨模态对齐和信息路由
 ```
 

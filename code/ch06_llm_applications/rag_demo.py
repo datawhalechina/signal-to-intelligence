@@ -3,12 +3,13 @@
 
 本实验演示如何构建一个简单的RAG系统，包括：
 1. 构建知识库
-2. 检索相关文档（余弦相似度）
+2. 用字符 n-gram 向量建立可离线运行的词法检索基线
 3. 生成增强的回答
 4. 可视化向量检索的语义空间
 """
 
-from typing import List, Dict
+from collections import Counter
+from typing import Dict, List
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -19,8 +20,26 @@ plt.rcParams["axes.unicode_minus"] = False
 OUTPUT_PATH = "assets/ch06_rag_vector_search.png"
 
 
+def character_ngrams(text: str, n: int = 2) -> Counter:
+    """Convert text to a deterministic character n-gram count vector."""
+    normalized = "".join(char.lower() for char in text if not char.isspace())
+    if len(normalized) < n:
+        return Counter([normalized]) if normalized else Counter()
+    return Counter(normalized[index:index + n] for index in range(len(normalized) - n + 1))
+
+
+def cosine_similarity(left: Counter, right: Counter) -> float:
+    """Cosine similarity for sparse count vectors."""
+    if not left or not right:
+        return 0.0
+    dot = sum(value * right.get(key, 0) for key, value in left.items())
+    left_norm = np.sqrt(sum(value * value for value in left.values()))
+    right_norm = np.sqrt(sum(value * value for value in right.values()))
+    return float(dot / (left_norm * right_norm))
+
+
 class SimpleRAG:
-    """简单的RAG系统实现"""
+    """Offline lexical retrieval baseline plus prompt construction."""
     
     def __init__(self):
         """初始化RAG系统"""
@@ -48,24 +67,18 @@ class SimpleRAG:
         ]
     
     def retrieve(self, query: str, top_k: int = 2) -> List[Dict]:
-        """检索相关文档"""
-        # 简单的关键词匹配
-        query_words = set(query.lower().split())
-        
+        """Retrieve documents using cosine similarity over n-gram vectors."""
+        if top_k < 1:
+            raise ValueError("top_k must be >= 1")
+        query_vector = character_ngrams(query)
         scores = []
         for doc in self.knowledge_base:
-            doc_words = set((doc["title"] + " " + doc["content"]).lower().split())
-            # 计算Jaccard相似度
-            intersection = len(query_words & doc_words)
-            union = len(query_words | doc_words)
-            score = intersection / union if union > 0 else 0
+            doc_vector = character_ngrams(doc["title"] + doc["content"])
+            score = cosine_similarity(query_vector, doc_vector)
             scores.append((doc, score))
-        
-        # 按相似度排序
-        scores.sort(key=lambda x: x[1], reverse=True)
-        
-        # 返回top_k个文档
-        return [doc for doc, score in scores[:top_k]]
+
+        scores.sort(key=lambda item: (-item[1], item[0]["id"]))
+        return [doc for doc, _ in scores[:top_k]]
     
     def generate_with_context(self, query: str, retrieved_docs: List[Dict]) -> str:
         """用检索到的文档生成回答"""
@@ -134,84 +147,10 @@ def demo_rag():
         print()
 
 
-def demo_agent_framework():
-    """演示Agent框架的概念"""
-    print("=" * 50)
-    print("Agent框架演示")
-    print("=" * 50)
-    print()
-    
-    # 定义工具
-    tools = [
-        {
-            "name": "search",
-            "description": "搜索知识库",
-            "parameters": {
-                "query": "搜索关键词"
-            }
-        },
-        {
-            "name": "calculate",
-            "description": "进行数学计算",
-            "parameters": {
-                "expression": "数学表达式"
-            }
-        },
-        {
-            "name": "get_time",
-            "description": "获取当前时间",
-            "parameters": {}
-        }
-    ]
-    
-    print("可用的工具：")
-    for tool in tools:
-        print(f"- {tool['name']}: {tool['description']}")
-    print()
-    
-    # Agent的工作流程
-    print("Agent的工作流程：")
-    print("1. 用户提问：'2024年有多少天？'")
-    print("2. Agent分析：需要知道2024年是否是闰年")
-    print("3. Agent调用工具：get_time() 获取当前年份")
-    print("4. Agent调用工具：calculate(366 if leap_year else 365)")
-    print("5. Agent生成回答：'2024年是闰年，有366天'")
-    print()
-
-
-def demo_finetuning_vs_prompt():
-    """演示微调 vs Prompt工程的对比"""
-    print("=" * 50)
-    print("微调 vs Prompt工程对比")
-    print("=" * 50)
-    print()
-    
-    comparison = {
-        "方面": ["成本", "时间", "性能", "灵活性", "数据需求"],
-        "Prompt工程": ["低", "快（秒级）", "中等", "高", "无"],
-        "微调": ["高", "慢（小时级）", "高", "低", "需要数据集"]
-    }
-    
-    # 打印对比表
-    print(f"{comparison['方面'][0]:<15} {comparison['Prompt工程'][0]:<15} {comparison['微调'][0]:<15}")
-    print("-" * 45)
-    
-    for i in range(len(comparison['方面'])):
-        print(f"{comparison['方面'][i]:<15} {comparison['Prompt工程'][i]:<15} {comparison['微调'][i]:<15}")
-    print()
-    
-    print("选择建议：")
-    print("- 简单任务 → 使用Prompt工程")
-    print("- 复杂任务 + 有数据 → 使用微调")
-    print("- 需要快速迭代 → 使用Prompt工程")
-    print("- 需要最优性能 → 使用微调")
-    print()
-
-
 def visualize_vector_search():
     """
     可视化向量检索的语义空间。
-    用手工设计的 2D 向量模拟 embedding，展示：
+    用手工设计的 2D 向量做几何示意，展示：
     - 语义相近的文档聚在一起
     - 查询向量与相关文档方向相近（余弦相似度高）
     """
@@ -245,7 +184,7 @@ def visualize_vector_search():
 
     # ── 绘图 ──────────────────────────────────────────────────────────────────
     fig, axes = plt.subplots(1, 2, figsize=(13, 5))
-    fig.suptitle("RAG: Semantic Vector Search in Embedding Space",
+    fig.suptitle("RAG: Illustrative Vector Geometry",
                  fontsize=13, fontweight="bold")
 
     # --- 左图：向量空间 ---
@@ -277,9 +216,12 @@ def visualize_vector_search():
             size   = 180 if is_retrieved else 80
             ax.scatter(*pt, color=color, s=size, marker=marker,
                        zorder=5, edgecolors="white", linewidths=0.8)
-            ax.annotate(doc_labels[label_idx], pt,
-                        textcoords="offset points", xytext=(6, 4),
-                        fontsize=7.5, color=color)
+            if is_retrieved:
+                rank = list(top2_idx).index(label_idx)
+                offset = (8, 10) if rank == 0 else (-38, -18)
+                ax.annotate(doc_labels[label_idx], pt,
+                            textcoords="offset points", xytext=offset,
+                            fontsize=8, color=color, fontweight="bold")
             label_idx += 1
 
     # 查询向量（箭头）
@@ -335,8 +277,6 @@ def visualize_vector_search():
 
 if __name__ == "__main__":
     demo_rag()
-    demo_agent_framework()
-    demo_finetuning_vs_prompt()
     visualize_vector_search()
 
     print("=" * 50)

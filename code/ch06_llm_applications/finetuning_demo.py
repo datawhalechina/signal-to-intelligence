@@ -1,7 +1,7 @@
 """
 实验6.2：微调方法参数量对比
 对应章节：第6章 6.2 微调：让 LLM 适配你的任务
-目标：可视化全量微调与 LoRA 不同 rank 下的可训练参数量差异
+目标：在明确结构假设下，可视化全量微调与 LoRA 的参数量差异
 """
 
 import numpy as np
@@ -21,7 +21,7 @@ D_MODEL = 4096
 N_LAYERS = 32
 N_ATTN_MATRICES = 4   # q, k, v, o
 
-total_params = 7_000_000_000  # 7B
+total_params = 7_000_000_000  # rounded reference size, not derived from the matrices above
 
 # LoRA 只作用于注意力层的 4 个矩阵
 # 每个矩阵 [d, d]，LoRA 参数 = 2 * d * r（A 矩阵 + B 矩阵）
@@ -67,7 +67,7 @@ def plot_lora_parameters(output_path=OUTPUT_PATH):
         ax1.text(
             bar.get_x() + bar.get_width() / 2,
             bar.get_height() * 1.3,
-            f"{p/1e9:.2f}B",
+            f"{p/1e9:.2f}B" if p >= 1e9 else f"{p/1e6:.1f}M",
             ha="center",
             va="bottom",
             fontsize=8.5,
@@ -90,10 +90,6 @@ def plot_lora_parameters(output_path=OUTPUT_PATH):
             va="bottom",
             fontsize=8.5,
         )
-
-    # 标注 LoRA 区域
-    ax2.axhline(y=5, color="gray", linestyle="--", linewidth=1, alpha=0.5)
-    ax2.text(len(methods) - 0.5, 5.3, "5% threshold", ha="right", fontsize=8, color="gray")
 
     plt.tight_layout()
     plt.savefig(output_path, dpi=120, bbox_inches="tight")

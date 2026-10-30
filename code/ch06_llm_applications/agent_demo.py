@@ -2,7 +2,7 @@
 第6章代码实验：Agent ReAct 循环演示
 
 演示 ReAct（Reason + Act + Observe）模式：
-- LLM 先推理（Reason）决定调用哪个工具
+- 用可审计的简短理由表示下一步工具选择
 - 执行工具（Act）获取结果
 - 观察结果（Observe）决定是否继续
 - 重复直到得出答案或达到最大步数
@@ -10,6 +10,8 @@
 使用模拟数据，无需 API Key 或外部依赖。
 """
 
+import ast
+import operator
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -30,8 +32,8 @@ KNOWLEDGE_BASE = {
         "再用文档增强 LLM 的生成过程。"
     ),
     "lora": (
-        "LoRA 通过低秩分解降低微调成本，只训练约 0.1-1% 的参数即可"
-        "达到接近全量微调的效果。"
+        "LoRA 的可训练参数量由 rank、矩阵输入输出维度、层数和目标模块共同决定，"
+        "不能用固定百分比代替计算。"
     ),
     "scaling": (
         "Chinchilla 缩放律表明：模型参数量和训练数据量应同步增长，"
@@ -52,9 +54,30 @@ def search_knowledge(query: str) -> str:
 
 
 def calculate(expression: str) -> str:
-    """计算数学表达式"""
+    """Safely evaluate an arithmetic-only expression."""
+    binary_ops = {
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+        ast.FloorDiv: operator.floordiv,
+        ast.Mod: operator.mod,
+    }
+    unary_ops = {ast.UAdd: operator.pos, ast.USub: operator.neg}
+
+    def evaluate(node):
+        if isinstance(node, ast.Expression):
+            return evaluate(node.body)
+        if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+            return node.value
+        if isinstance(node, ast.BinOp) and type(node.op) in binary_ops:
+            return binary_ops[type(node.op)](evaluate(node.left), evaluate(node.right))
+        if isinstance(node, ast.UnaryOp) and type(node.op) in unary_ops:
+            return unary_ops[type(node.op)](evaluate(node.operand))
+        raise ValueError("只允许数字和基本算术运算")
+
     try:
-        result = eval(expression, {"__builtins__": {}})
+        result = evaluate(ast.parse(expression, mode="eval"))
         return str(result)
     except Exception as exc:
         return f"计算错误：{exc}"
@@ -80,20 +103,20 @@ TOOLS.update(
 
 
 def simulate_llm_reason(question: str, history: list[dict]) -> dict:
-    """模拟 LLM 的推理步骤。"""
+    """Simulate auditable action selection, not hidden chain-of-thought."""
     step = len(history)
 
     if "什么是" in question or "介绍" in question:
         if step == 0:
             keyword = question.replace("什么是", "").replace("？", "").replace("?", "").strip()
             return {
-                "thought": f"用户想了解 '{keyword}' 的定义，需要搜索知识库。",
+                "rationale": f"定义问题需要先查询本地知识库：{keyword}",
                 "action": "search",
                 "input": keyword,
             }
         obs = history[-1]["observation"]
         return {
-            "thought": "已获得搜索结果，可以直接回答。",
+            "rationale": "知识库已返回结果，可以结束工具循环。",
             "action": "answer",
             "input": obs,
         }
@@ -101,34 +124,29 @@ def simulate_llm_reason(question: str, history: list[dict]) -> dict:
     if "参数量" in question or "计算" in question:
         if step == 0:
             return {
-                "thought": (
-                    "用户问参数量，需要先搜索 LoRA 的参数比例，"
-                    "再计算具体数值。"
-                ),
+                "rationale": "参数量取决于结构，先查询 LoRA 计算条件。",
                 "action": "search",
                 "input": "lora",
             }
         if step == 1:
             return {
-                "thought": (
-                    "已知 LoRA 训练约 1% 参数。假设模型 70B 参数，"
-                    "计算 LoRA 参数量。"
-                ),
+                "rationale": "按 32 层、q/v 两个 4096×4096 矩阵、rank=8 计算。",
                 "action": "calculate",
-                "input": "70_000_000_000 * 0.01",
+                "input": "32 * 2 * 2 * 4096 * 8",
             }
         calc_result = history[-1]["observation"]
         return {
-            "thought": f"计算完成：{calc_result} 个参数，约 7 亿。可以回答了。",
+            "rationale": "结构化参数已计算，可以返回带假设的结果。",
             "action": "answer",
             "input": (
-                "70B 模型使用 LoRA（r=8）微调时，可训练参数约为 "
-                f"{int(float(calc_result)):,} 个（约 7 亿），是全量微调的 1%。"
+                "在 32 层、隐藏维度 4096、仅对 q/v 投影使用 rank=8 LoRA 的假设下，"
+                f"可训练矩阵参数为 {int(float(calc_result)):,}。"
+                "更换目标模块或模型结构后必须重新计算。"
             ),
         }
 
     return {
-        "thought": "问题较简单，无需工具，直接回答。",
+        "rationale": "当前工具无法提供可靠证据。",
         "action": "answer",
         "input": "这个问题超出了当前知识库范围。",
     }
@@ -179,7 +197,7 @@ def react_agent(question: str, max_steps: int = 5) -> str:
     print(f"{'=' * 55}")
     for item in result["transcript"]:
         print(f"\n[Step {item['step']}]")
-        print(f"  Thought : {item['thought']}")
+        print(f"  Rationale: {item['rationale']}")
         print(f"  Action  : {item['action']}")
         if item["action"] == "answer":
             print(f"  Answer  : {item['input']}")
@@ -208,8 +226,8 @@ def plot_results(result, output_path=OUTPUT_PATH):
         print(f"\n  单步成功率 {r:.0%}：")
         for n in [1, 3, 5, 10]:
             print(f"    {n:2d} 步任务：{r**n:.1%} 成功率")
-    print("\n结论：Agent 步骤越多，整体可靠性越低。")
-    print("工程实践：控制 Agent 步数，复杂任务拆分为多个简单 Agent。")
+    print("\n说明：曲线假设各步骤独立、成功率相同且全部必须成功。")
+    print("工程实践：固定流程优先用确定性编排；动态步骤需要校验、回退和终止条件。")
 
     fig, ax = plt.subplots(figsize=(8, 5))
     colors = ["#e74c3c", "#f39c12", "#27ae60"]
@@ -230,7 +248,7 @@ def plot_results(result, output_path=OUTPUT_PATH):
     ax.text(10.1, 50, "50%", va="center", fontsize=9, color="gray")
     ax.set_xlabel("Number of Steps", fontsize=12)
     ax.set_ylabel("Overall Success Rate (%)", fontsize=12)
-    ax.set_title("Agent Error Accumulation: Multi-Step Reliability", fontsize=13, fontweight="bold")
+    ax.set_title("Independent-Step Reliability Illustration", fontsize=13, fontweight="bold")
     ax.set_xticks(chart["steps"])
     ax.set_ylim(0, 105)
     ax.legend(title="Per-step success rate", fontsize=10)
@@ -247,7 +265,7 @@ def plot_results(result, output_path=OUTPUT_PATH):
 
 def run_experiment():
     question1 = "什么是 RAG？"
-    question2 = "70B 模型用 LoRA 微调需要多少参数量？"
+    question2 = "给定结构时，LoRA 可训练参数量如何计算？"
     answer1 = solve_question(question1)
     answer2 = solve_question(question2)
     chart = demo_error_accumulation()
@@ -270,7 +288,7 @@ def main():
 
     run_experiment()
     react_agent("什么是 RAG？")
-    react_agent("70B 模型用 LoRA 微调需要多少参数量？")
+    react_agent("给定结构时，LoRA 可训练参数量如何计算？")
     plot_results({})
 
     print(f"\n{'=' * 55}")

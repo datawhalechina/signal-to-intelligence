@@ -1,7 +1,4 @@
-"""
-LLM System Design: Technology Selection Visualization
-Decision framework for choosing Prompt / Fine-tuning / RAG / Agent.
-"""
+"""Illustrative decision framework; scores are not empirical benchmarks."""
 
 from pathlib import Path
 
@@ -16,13 +13,15 @@ OUTPUT_PATH = Path("assets/ch06_system_design.png")
 
 
 def run_experiment():
+    # These profiles make trade-offs visible in one teaching figure. They do
+    # not rank technologies universally and must not be used for procurement.
     categories = [
         "Performance",
         "Flexibility",
-        "Cost",
-        "Latency\n(low=good)",
+        "Cost\nEfficiency",
+        "Latency\nEfficiency",
         "Maintainability",
-        "Data\nRequirement\n(low=good)",
+        "Data\nEfficiency",
     ]
     approaches = {
         "Prompt": [3, 5, 5, 4, 5, 5],
@@ -38,6 +37,7 @@ def run_experiment():
     totals = setup_cost + run_cost + maintain
 
     return {
+        "data_kind": "illustrative_profiles",
         "categories": categories,
         "approaches": approaches,
         "approaches_order": approaches_order,
@@ -69,7 +69,7 @@ def plot_radar(ax, result):
         ax.plot(angles, vals_plot, "o-", linewidth=2, color=color, label=name)
         ax.fill(angles, vals_plot, alpha=0.08, color=color)
 
-    ax.set_title("Approach Comparison\n(higher = better)", fontsize=12, fontweight="bold", pad=20)
+    ax.set_title("Illustrative Profiles\n(scenario assumptions)", fontsize=12, fontweight="bold", pad=20)
     ax.legend(loc="upper right", bbox_to_anchor=(1.35, 1.15), fontsize=9)
 
 
@@ -95,9 +95,9 @@ def plot_decision_tree(ax):
         ax.text(x, y, text, ha="center", va="center", fontsize=fontsize,
                 color="white", fontweight="bold", zorder=4)
 
-    def diamond(x, y, text, color="#E8A838", fontsize=8.5):
+    def diamond(x, y, text, color="#E8A838", fontsize=7.5):
         d = 0.55
-        xs = [x, x + d * 1.6, x, x - d * 1.6, x]
+        xs = [x, x + d * 2.5, x, x - d * 2.5, x]
         ys = [y + d, y, y - d, y, y + d]
         ax.fill(xs, ys, color=color, alpha=0.9, zorder=3)
         ax.plot(xs, ys, color="white", linewidth=1.2, zorder=4)
@@ -120,7 +120,7 @@ def plot_decision_tree(ax):
     box(8.2, 6.2, "RAG", "#C44E52", width=2.0)
     diamond(5, 4.6, "Strict format\nor style?")
     box(8.2, 4.6, "Fine-tuning\n(LoRA)", "#55A868", width=2.0)
-    diamond(5, 3.0, "Multi-step\ntool use?")
+    diamond(5, 3.0, "Dynamic next\naction needed?")
     box(8.2, 3.0, "Agent", "#8172B2", width=2.0)
     box(5, 1.5, "Combine approaches\nas needed", "#888888", width=3.2)
 
@@ -162,8 +162,8 @@ def plot_cost_timeline(ax, result):
     )
     ax.set_xticks(x)
     ax.set_xticklabels(approaches, fontsize=11)
-    ax.set_ylabel("Relative Cost (arbitrary units)", fontsize=10)
-    ax.set_title("Total Cost Breakdown by Approach", fontsize=12, fontweight="bold")
+    ax.set_ylabel("Illustrative effort units", fontsize=10)
+    ax.set_title("Scenario Cost Assumptions", fontsize=12, fontweight="bold")
     ax.legend(fontsize=9, loc="upper left")
     ax.grid(axis="y", alpha=0.3)
     for i, total in enumerate(result["totals"]):

@@ -1,8 +1,4 @@
-"""
-Prompt Engineering Techniques Visualization
-Demonstrates Zero-shot / Few-shot / Chain-of-Thought effectiveness
-and the iterative prompt optimization workflow.
-"""
+"""Illustrative Prompt strategy visualization, not benchmark results."""
 
 from pathlib import Path
 
@@ -17,6 +13,8 @@ OUTPUT_PATH = Path("assets/ch06_prompt_techniques.png")
 
 
 def run_experiment():
+    # Hand-authored scenario scores used only to explain that strategy ranking
+    # can vary by task. They are not measurements from any model or dataset.
     tasks = ["Classification", "Math\nReasoning", "Code\nGeneration", "Summarization"]
     zero_shot = np.array([72, 45, 58, 78], dtype=float)
     few_shot = np.array([85, 62, 74, 83], dtype=float)
@@ -27,12 +25,13 @@ def run_experiment():
     colors = ["#4C72B0", "#55A868", "#C44E52", "#8172B2"]
     steps = [
         (1.0, "Write\nInitial\nPrompt", "#4C72B0"),
-        (3.2, "Test on\n10-20\nSamples", "#55A868"),
+        (3.2, "Run Fixed\nEvaluation\nSet", "#55A868"),
         (5.4, "Analyze\nFailure\nCases", "#C44E52"),
         (7.6, "Refine\nPrompt", "#8172B2"),
     ]
 
     return {
+        "data_kind": "illustrative_scenario",
         "tasks": tasks,
         "zero_shot": zero_shot,
         "few_shot": few_shot,
@@ -59,21 +58,13 @@ def plot_technique_comparison(ax, result):
         alpha=0.85,
     )
     ax.set_xlabel("Task Type", fontsize=11)
-    ax.set_ylabel("Accuracy (%)", fontsize=11)
-    ax.set_title("Prompting Strategy vs Task Type", fontsize=13, fontweight="bold")
+    ax.set_ylabel("Illustrative task score", fontsize=11)
+    ax.set_title("Illustrative Strategy Differences", fontsize=13, fontweight="bold")
     ax.set_xticks(x)
     ax.set_xticklabels(result["tasks"], fontsize=10)
     ax.set_ylim(0, 100)
     ax.legend(fontsize=10)
     ax.grid(axis="y", alpha=0.3)
-    ax.annotate(
-        "+43pts\nvs Zero-shot",
-        xy=(x[1] + width, result["cot"][1]),
-        xytext=(x[1] + width + 0.35, result["cot"][1] + 5),
-        fontsize=8,
-        color="#C44E52",
-        arrowprops=dict(arrowstyle="->", color="#C44E52", lw=1.2),
-    )
 
 
 def plot_cost_vs_effort(ax, result):
@@ -97,10 +88,10 @@ def plot_cost_vs_effort(ax, result):
         alpha=0.08,
     )
     ax.add_patch(rect)
-    ax.text(2.75, 89.5, "Sweet Spot", ha="center", fontsize=9, color="#55A868", style="italic")
+    ax.text(2.75, 89.5, "Example region", ha="center", fontsize=9, color="#55A868", style="italic")
     ax.set_xlabel("Engineering Effort (relative)", fontsize=11)
-    ax.set_ylabel("Performance (%)", fontsize=11)
-    ax.set_title("Cost vs Performance Trade-off", fontsize=13, fontweight="bold")
+    ax.set_ylabel("Illustrative quality score", fontsize=11)
+    ax.set_title("Illustrative Effort vs Quality", fontsize=13, fontweight="bold")
     ax.set_xlim(0, 11)
     ax.set_ylim(55, 98)
     ax.grid(alpha=0.3)
