@@ -75,7 +75,12 @@
 
 前馈网络对每个 token 的表示做独立的非线性变换：
 
-$$\text{FFN}(x) = \max(0, xW_1 + b_1)W_2 + b_2$$
+$$
+\operatorname{FFN}(\mathbf x)
+=\phi(\mathbf x\mathbf W_1+\mathbf b_1)\mathbf W_2+\mathbf b_2
+$$
+
+$\phi$ 可以是 ReLU、GELU 或其他激活函数，具体选择由模型架构决定。
 
 它的作用是：
 - 提升单个 token 表示的非线性表达能力
@@ -96,7 +101,7 @@ $$\text{FFN}(x) = \max(0, xW_1 + b_1)W_2 + b_2$$
 
 残差连接的形式是：
 
-$$\text{output} = \text{sublayer}(x) + x$$
+$$\mathbf y=\mathbf x+F(\mathbf x)$$
 
 它看起来只是把输入再加回来，但作用非常关键。
 
@@ -115,11 +120,24 @@ Transformer 的很多层并不是每层都“重写全部表示”，而是基�
 
 ## 为什么要用 LayerNorm？
 
-LayerNorm 的形式是：
+对单个 token 的 $d$ 维表示 $\mathbf x$，LayerNorm 的形式是：
 
-$$\text{LayerNorm}(x) = \gamma \frac{x - \mu}{\sigma} + \beta$$
+$$
+\mu=\frac1d\sum_{i=1}^d x_i,
+\qquad
+\sigma^2=\frac1d\sum_{i=1}^d(x_i-\mu)^2,
+$$
+
+$$
+\operatorname{LayerNorm}(\mathbf x)
+=\boldsymbol\gamma\odot
+\frac{\mathbf x-\mu}{\sqrt{\sigma^2+\epsilon}}
++\boldsymbol\beta.
+$$
 
 它和 BatchNorm 不同，不依赖 batch 维度统计，而是对单个样本的特征维度做归一化。
+
+$\epsilon$ 用于避免方差接近零时除零。不同 Transformer 还会采用 Pre-LN 或 Post-LN，不能仅由归一化公式判断 block 的连接顺序。统一公式见[附录 A.7](../appendix/A_math_reference.md#a7-transformer)。
 
 ### LayerNorm 的作用
 
@@ -163,7 +181,7 @@ $$\text{LayerNorm}(x) = \gamma \frac{x - \mu}{\sigma} + \beta$$
 **典型用途：**
 - 文本分类
 - 序列标注
-- 表征学习
+- 表示学习
 
 **代表模型：** BERT
 
@@ -231,7 +249,7 @@ decoder-only 直接对应 next-token prediction：给定前文，预测下一个
 
 ### 2. 生成过程天然一致
 
-训练时学的是“根据前文预测后文”，推理时做的也是同样的事：不断追加新 token 并继续预测。
+训练时学的是“根据前文预测后文”；模型推理中的生成过程则不断追加已选 token 并继续预测。二者共享条件概率模型，但输入来源和执行过程不同。
 
 ### 3. 架构更简洁，易于规模化
 相比 encoder-decoder，decoder-only 少了一套编码器和 cross-attention 路径，整体结构更统一，在大规模预训练中更容易扩展。
@@ -242,7 +260,7 @@ LLM 不只是做固定输入到输出的映射，而是要持续生成自然语�
 
 因此，现代 LLM 可以理解为：**把 Transformer 的自注意力与深层 block 结构，集中用于因果生成这条路线。**
 
-这也是为什么 decoder-only 不只是一个“简化版结构”，而是和预训练目标、推理方式、扩展路径一起协同设计出来的结果。
+这也是为什么 decoder-only 不只是一个“简化版结构”，而是和预训练目标、生成方式、扩展路径一起协同设计出来的结果。
 
 ## 完整流程示例：机器翻译 vs 语言模型
 
@@ -299,7 +317,7 @@ Transformer 的完整架构之所以成功，不是因为它只有 attention，�
 - 多层堆叠负责逐步形成更抽象的表示
 - decoder-only 则把这些能力收束到自回归生成上
 
-所以，现代 LLM 不是“在 Transformer 上多叠几层”这么简单，而是把架构、目标函数和推理方式一起统一起来。
+所以，现代 LLM 不是“在 Transformer 上多叠几层”这么简单，而是把架构、目标函数和模型推理中的生成方式一起统一起来。
 
 ---
 

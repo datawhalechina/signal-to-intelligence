@@ -6,20 +6,24 @@
 
 ## 对比学习目标
 
-给定一批匹配的图像表示 $v_i$ 与文本表示 $t_i$，可以用归一化向量的余弦相似度构造分数：
+给定一批匹配的图像表示 $\mathbf v_i$ 与文本表示 $\mathbf t_i$，先做 L2 归一化，再用余弦相似度和温度构造 logits：
 
 $$
-s_{ij}=\frac{v_i^Tt_j}{\tau}
+\mathbf v_i\leftarrow\frac{\mathbf v_i}{\|\mathbf v_i\|_2},
+\qquad
+\mathbf t_i\leftarrow\frac{\mathbf t_i}{\|\mathbf t_i\|_2},
+\qquad
+\ell_{ij}=\frac{\mathbf v_i^{\mathsf T}\mathbf t_j}{\tau}
 $$
 
 图像到文本方向的 InfoNCE 损失为：
 
 $$
-L_{i\rightarrow t}=-\frac{1}{N}\sum_i
-\log\frac{\exp(s_{ii})}{\sum_j\exp(s_{ij})}
+L_{I\rightarrow T}=-\frac{1}{B}\sum_{i=1}^B
+\log\frac{\exp(\ell_{ii})}{\sum_{j=1}^B\exp(\ell_{ij})}
 $$
 
-通常还计算文本到图像方向并取平均。它让匹配对相对于同批其他样本获得更高分数，不意味着所有未匹配样本在语义上都是真负例。
+通常还计算文本到图像方向并取平均：$L_{\mathrm{contrastive}}=(L_{I\to T}+L_{T\to I})/2$。它让匹配对相对于同批其他样本获得更高分数，不意味着所有未匹配样本在语义上都是真负例。统一公式见[附录 A.9](../../appendix/A_math_reference.md#a9-多模态表示与对齐)。
 
 温度 $\tau$ 控制 softmax 的尖锐程度。batch size 增加会带来更多批内负例，也会增加计算与通信；重复图像、近义文本和错误配对会形成假负例。
 

@@ -32,13 +32,15 @@ SFT 可以调整任务行为、输出格式、术语使用，也可能让模型�
 
 ## LoRA
 
-对于原权重 $W_0\in\mathbb R^{d_{out}\times d_{in}}$，LoRA 冻结 $W_0$，并学习低秩更新：
+对于原权重 $\mathbf W_0\in\mathbb R^{d_{out}\times d_{in}}$，LoRA 冻结 $\mathbf W_0$，并学习低秩更新：
 
 $$
-W=W_0+\Delta W,\qquad \Delta W=BA
+\mathbf W=\mathbf W_0+\Delta\mathbf W,
+\qquad
+\Delta\mathbf W=\frac{\alpha}{r}\mathbf B\mathbf A
 $$
 
-其中 $A\in\mathbb R^{r\times d_{in}}$、$B\in\mathbb R^{d_{out}\times r}$，且 $r$ 通常远小于输入和输出维度。可训练参数量为：
+其中 $\mathbf A\in\mathbb R^{r\times d_{in}}$、$\mathbf B\in\mathbb R^{d_{out}\times r}$，$\alpha/r$ 是常见缩放约定，$r$ 通常远小于输入和输出维度。不同实现可能采用其他等价参数化，比较配置时要同时记录 rank 和缩放。可训练参数量为：
 
 $$
 r(d_{in}+d_{out})
@@ -46,7 +48,7 @@ $$
 
 而原矩阵参数量为 $d_{in}d_{out}$。实际参数比例还取决于 LoRA 被插入哪些层，不能仅由 rank 推断。
 
-训练完成后，可将 $BA$ 合并到 $W_0$ 以减少推理时的附加算子；也可以保留独立适配器，在同一基础模型上切换任务。
+训练完成后，可将 $(\alpha/r)\mathbf B\mathbf A$ 合并到 $\mathbf W_0$，以减少模型推理时的附加算子；也可以保留独立适配器，在同一基础模型上切换任务。统一维度约定见[附录 A.8](../appendix/A_math_reference.md#a8-llm-训练与生成)。
 
 低秩更新是一种容量约束，不保证等价于全量微调。rank、目标模块、数据量和任务差异都会影响结果，应把全量微调或未微调模型作为基线。
 

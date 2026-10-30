@@ -48,17 +48,25 @@ RNN 的做法更像是“把整句话压缩进一个不断更新的记忆状态�
 
 ## 数学表达
 
-$$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right) V$$
+令输入序列表示为 $\mathbf X\in\mathbb R^{n\times d}$，单头投影得到 $\mathbf Q,\mathbf K\in\mathbb R^{n\times d_k}$ 和 $\mathbf V\in\mathbb R^{n\times d_v}$：
+
+$$
+\operatorname{Attention}(\mathbf Q,\mathbf K,\mathbf V)
+=\operatorname{softmax}_{\text{key}}
+\left(\frac{\mathbf Q\mathbf K^{\mathsf T}}{\sqrt{d_k}}\right)\mathbf V.
+$$
 
 其中：
-- $Q$：查询（Query）— 当前位置想问什么
-- $K$：键（Key）— 每个位置如何被匹配
-- $V$：值（Value）— 每个位置真正提供的内容
+- $\mathbf Q$：查询（Query）— 当前位置想问什么
+- $\mathbf K$：键（Key）— 每个位置如何被匹配
+- $\mathbf V$：值（Value）— 每个位置真正提供的内容
+
+这里的 softmax 对每个 query 对应的 key 轴归一化，因此每一行权重之和为 1。完整的符号和带 Mask 公式见[附录 A.7](../appendix/A_math_reference.md#a7-transformer)。
 
 这个公式可以拆成三步理解：
-1. 用 $QK^T$ 计算“我和谁相关”
+1. 用 $\mathbf Q\mathbf K^{\mathsf T}$ 计算“我和谁相关”
 2. 用 softmax 把相关性变成权重分布
-3. 用权重对 $V$ 做加权求和，得到新的表示
+3. 用权重对 $\mathbf V$ 做加权求和，得到新的表示
 
 ---
 
@@ -95,7 +103,7 @@ $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)
 
 ### 1. 计算相似度
 
-$$\text{scores} = QK^T$$
+$$\mathbf S=\mathbf Q\mathbf K^{\mathsf T}\in\mathbb R^{n\times n}$$
 
 **含义：** 当前位置与其他位置的匹配程度。
 
@@ -103,7 +111,11 @@ $$\text{scores} = QK^T$$
 
 ### 2. 缩放并归一化
 
-$$\text{weights} = \text{softmax}\left(\frac{\text{scores}}{\sqrt{d_k}}\right)$$
+$$
+\mathbf A=\operatorname{softmax}_{\text{key}}
+\left(\frac{\mathbf S}{\sqrt{d_k}}\right)
+\in\mathbb R^{n\times n}
+$$
 
 **含义：** 把相似度变成概率式权重分布。
 
@@ -111,20 +123,20 @@ $$\text{weights} = \text{softmax}\left(\frac{\text{scores}}{\sqrt{d_k}}\right)$$
 
 ### 为什么要除以 $\sqrt{d_k}$？
 
-当 key/query 维度 $d_k$ 变大时，点积的数值幅度通常也会变大。这样一来，softmax 的输入就容易变得非常尖锐：
+若 query 和 key 的各维近似独立、均值接近 0 且方差相近，点积方差会随 $d_k$ 增长。这样一来，softmax 的输入就容易变得非常尖锐：
 - 最大值对应的位置权重接近 1
 - 其他位置权重接近 0
 - 梯度变小，训练不稳定
 
 除以 $\sqrt{d_k}$ 的作用，就是把分数重新压回一个更稳定的量级，让 softmax 不至于过早饱和。
 
-可以把它理解成：**维度越高，点积天然越“膨胀”，所以必须做归一化。**
+可以把它理解成：**在常见初始化假设下，维度越高，未缩放点积的方差越大，因此用 $\sqrt{d_k}$ 控制尺度。**
 
 这个设计和第 2 章的数值稳定性是同一类问题：不是公式本身复杂，而是实现时必须控制数值尺度。
 
 ### 3. 加权求和
 
-$$\text{output} = \text{weights} \cdot V$$
+$$\mathbf O=\mathbf A\mathbf V\in\mathbb R^{n\times d_v}$$
 
 **含义：** 按照关注强度，对所有位置的内容做加权融合。
 
@@ -181,7 +193,7 @@ RNN 必须按时间步顺序计算，而自注意力可以一次性计算整个�
 ## 与向量空间和线性代数的联系
 
 从线性代数角度看，自注意力并不神秘：
-- $QK^T$ 是一组向量间的相似度矩阵
+- $\mathbf Q\mathbf K^{\mathsf T}$ 是一组向量间的相似度矩阵
 - softmax 把相似度变成归一化权重
 - 权重矩阵再去乘 $V$，得到新的线性组合
 

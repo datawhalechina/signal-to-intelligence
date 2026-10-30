@@ -61,11 +61,21 @@
 
 ### 数学表达
 
-$$\text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, ..., \text{head}_h) W^O$$
+$$
+\operatorname{MHA}(\mathbf Q,\mathbf K,\mathbf V)
+=\operatorname{Concat}(\operatorname{head}_1,\ldots,\operatorname{head}_h)\mathbf W^O
+$$
 
 其中：
 
-$$\text{head}_i = \text{Attention}(Q W_i^Q, K W_i^K, V W_i^V)$$
+$$
+\operatorname{head}_i
+=\operatorname{Attention}(\mathbf Q\mathbf W_i^Q,
+\mathbf K\mathbf W_i^K,
+\mathbf V\mathbf W_i^V)
+$$
+
+常见设置下，每个头的 $d_k=d_v=d/h$，拼接后恢复到模型维度 $d$；具体模型也可以采用不同的键值头配置。统一记号见[附录 A.7](../appendix/A_math_reference.md#a7-transformer)。
 
 这里最重要的一点不是“有多个头”，而是：**每个头都有自己独立的投影矩阵。**
 
@@ -152,9 +162,9 @@ $$\text{head}_i = \text{Attention}(Q W_i^Q, K W_i^K, V W_i^V)$$
 
 多头并不是没有代价。
 
-### 1. 参数和计算成本增加
+### 1. 计算布局与实现成本
 
-更多头意味着更多投影矩阵和更多注意力计算，虽然单头维度通常会变小，但整体实现复杂度仍然提升。
+在模型维度 $d$ 固定且各头维度满足 $h d_k=d$ 时，标准多头注意力的 Q/K/V 与输出投影参数量仍约为 $4d^2$，不会仅因头数增加而按比例增长；主要矩阵乘法的理论计算量也处于同一量级。头数会改变单头维度、中间张量形状、并行粒度和算子效率，因此实际速度与显存仍需测量。
 
 ### 2. 头数不是越多越好
 
@@ -166,7 +176,7 @@ $$\text{head}_i = \text{Attention}(Q W_i^Q, K W_i^K, V W_i^V)$$
 
 因此，多头注意力的关键不在于“尽量多”，而在于在表达能力和计算成本之间找到合适平衡。
 
-换句话说，多头不是免费增益，而是把表示能力换成了更多计算和更多参数自由度。
+换句话说，多头不是免费增益：它改变了表示如何分解到多个子空间，也改变了计算布局，但收益和代价不能只从头数推断。
 
 ---
 

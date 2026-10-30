@@ -136,7 +136,7 @@
 - 人工评估流程与 Chatbot Arena 机制
 - 中文评估（C-Eval、CMMLU）
 
-### 推理机制优化 — [📖 阅读](extensions/inference_optimization.md)
+### 模型推理优化 — [📖 阅读](extensions/inference_optimization.md)
 - KV Cache：为什么自回归生成需要缓存
 - Flash Attention：IO 复杂度分析
 - 量化原理（INT8/INT4）
