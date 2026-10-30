@@ -67,7 +67,9 @@ $$\ln L(\theta; \mathbf{y}) = -\frac{1}{2\sigma^2} \sum_{n=0}^{N-1} (y[n] - s(x[
 **最大化对数似然等价于最小化误差平方和：**
 $$\hat{\theta}_{\text{ML}} = \arg\min_{\theta} \sum_{n=0}^{N-1} (y[n] - s(x[n];\theta))^2$$
 
-### MLE的性质
+### MLE 的渐近性质
+
+以下性质需要模型可辨识、参数位于合适的内部区域、似然满足正则性条件，以及样本结构允许相应大样本极限：
 
 **一致性：** 当 $N \to \infty$ 时，$\hat{\theta}_{\text{ML}} \to \theta_0$（真实参数）
 
@@ -85,7 +87,7 @@ $$\hat{\theta}_{\text{ML}} = \arg\min_{\theta} \sum_{n=0}^{N-1} (y[n] - s(x[n];\
 
 $$\hat{\theta}_{\text{LS}} = \arg\min_{\theta} \sum_{n=0}^{N-1} (y[n] - s(x[n];\theta))^2$$
 
-**与MLE的关系：** 在高斯噪声假设下，LSE等价于MLE。
+**与 MLE 的关系：** 在独立、同方差、零均值高斯加性噪声下，未加权 LSE 等价于 MLE。噪声相关或方差不同时，应使用广义/加权最小二乘口径。
 
 ### 线性最小二乘
 
@@ -99,8 +101,14 @@ $$\mathbf{y} = \mathbf{X} \mathbf{h} + \mathbf{w}$$
 
 其中 $\mathbf{X}$ 是设计矩阵。
 
-**闭式解：**
-$$\hat{\mathbf{h}}_{\text{LS}} = (\mathbf{X}^T \mathbf{X})^{-1} \mathbf{X}^T \mathbf{y}$$
+若 $\mathbf X$ 满列秩，实数情形的闭式解为
+
+$$
+\widehat{\mathbf h}_{\mathrm{LS}}
+=(\mathbf X^{\mathsf T}\mathbf X)^{-1}\mathbf X^{\mathsf T}\mathbf y.
+$$
+
+一般情形写作 $\widehat{\mathbf h}_{\mathrm{LS}}=\mathbf X^+\mathbf y$，其中 $\mathbf X^+$ 是 Moore–Penrose 伪逆；复数数据使用共轭转置 $\mathsf H$。
 
 **优点：** 有闭式解，计算快速。
 
@@ -140,7 +148,7 @@ $$p(\theta|\mathbf{y}) = \frac{p(\mathbf{y}|\theta) p(\theta)}{p(\mathbf{y})}$$
 $$\hat{\theta}_{\text{MAP}} = \arg\max_{\theta} p(\theta|\mathbf{y})$$
 
 **2. 最小均方误差估计（MMSE）**
-$$\hat{\theta}_{\text{MMSE}} = E[\theta|\mathbf{y}] = \int \theta \cdot p(\theta|\mathbf{y}) d\theta$$
+$$\hat{\theta}_{\text{MMSE}} = \mathbb E[\theta|\mathbf{y}] = \int \theta\,p(\theta|\mathbf{y})\,d\theta$$
 
 **3. 最小绝对误差估计（MAE）**
 $$\hat{\theta}_{\text{MAE}} = \text{median}(\theta|\mathbf{y})$$
@@ -156,7 +164,7 @@ $$\hat{\theta}_{\text{MAE}} = \text{median}(\theta|\mathbf{y})$$
 - 利用先验知识改进估计
 - 结果是后验分布，不仅是点估计
 
-**实际应用：** 当有先验知识时，贝叶斯方法通常更好。
+**实际应用：** 先验可以在数据有限时提供正则化与不确定性表达，但结果依赖先验和模型是否合理，不能笼统断言一定优于频率学派估计。
 
 ---
 
@@ -168,21 +176,31 @@ $$\hat{\theta}_{\text{MAE}} = \text{median}(\theta|\mathbf{y})$$
 
 $$\text{Var}(\hat{\theta}) \geq \text{CRB}(\theta) = \frac{1}{I(\theta)}$$
 
-其中 $I(\theta)$ 是Fisher信息矩阵。
+其中标量参数时 $I(\theta)$ 是 Fisher 信息；向量参数时应使用 Fisher 信息矩阵，CRB 写成协方差矩阵的不等式。
 
-### Fisher信息矩阵
+### Fisher 信息：标量与向量形式
 
-**定义：**
-$$I(\theta) = E\left[\left(\frac{\partial \ln L(\theta; \mathbf{y})}{\partial \theta}\right)^2\right]$$
+**标量参数：**
+$$I(\theta)=\mathbb E\left[\left(\frac{\partial\log p(\mathbf y;\theta)}{\partial\theta}\right)^2\right]$$
+
+**向量参数：** 若得分向量为 $\nabla_{\boldsymbol\theta}\log p(\mathbf y;\boldsymbol\theta)$，则 Fisher 信息矩阵为
+
+$$
+\mathbf I(\boldsymbol\theta)
+=\mathbb E\!\left[
+\nabla_{\boldsymbol\theta}\log p(\mathbf y;\boldsymbol\theta)
+\nabla_{\boldsymbol\theta}\log p(\mathbf y;\boldsymbol\theta)^{\mathsf T}
+\right].
+$$
 
 **性质：**
-- $I(\theta) > 0$（对于充分的观测）
+- 对可辨识且满足正则条件的标量参数，$I(\theta)>0$
 - $I(\theta)$ 越大，CRB越小（估计越精确）
-- 观测数 $N$ 越多，$I(\theta)$ 越大
+- 独立且有信息的新增观测通常使 Fisher 信息相加；重复或退化观测不一定提供新信息
 
 ### 高斯噪声下的CRB
 
-**对于高斯噪声，Fisher信息矩阵为：**
+**对于独立同方差实高斯噪声和标量参数，Fisher 信息为：**
 $$I(\theta) = \frac{1}{\sigma^2} \sum_{n=0}^{N-1} \left(\frac{\partial s(x[n];\theta)}{\partial \theta}\right)^2$$
 
 **CRB：**
@@ -202,7 +220,7 @@ $$\text{CRB}(\theta) = \frac{\sigma^2}{\sum_{n=0}^{N-1} \left(\frac{\partial s(x
 ### 1. 偏差（Bias）
 
 **定义：**
-$$\text{Bias}(\hat{\theta}) = E[\hat{\theta}] - \theta$$
+$$\operatorname{Bias}(\hat{\theta}) = \mathbb E[\hat{\theta}] - \theta$$
 
 **无偏估计器：** $\text{Bias}(\hat{\theta}) = 0$
 
@@ -215,7 +233,7 @@ $$\text{Bias}(\hat{\theta}) = E[\hat{\theta}] - \theta$$
 ### 2. 方差（Variance）
 
 **定义：**
-$$\text{Var}(\hat{\theta}) = E[(\hat{\theta} - E[\hat{\theta}])^2]$$
+$$\operatorname{Var}(\hat{\theta}) = \mathbb E[(\hat{\theta} - \mathbb E[\hat{\theta}])^2]$$
 
 **性质：**
 - 方差越小，估计越稳定
@@ -224,7 +242,7 @@ $$\text{Var}(\hat{\theta}) = E[(\hat{\theta} - E[\hat{\theta}])^2]$$
 ### 3. 均方误差（Mean Squared Error, MSE）
 
 **定义：**
-$$\text{MSE}(\hat{\theta}) = E[(\hat{\theta} - \theta)^2]$$
+$$\operatorname{MSE}(\hat{\theta}) = \mathbb E[(\hat{\theta} - \theta)^2]$$
 
 **分解：**
 $$\text{MSE}(\hat{\theta}) = \text{Bias}^2(\hat{\theta}) + \text{Var}(\hat{\theta})$$

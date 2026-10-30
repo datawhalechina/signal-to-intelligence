@@ -95,10 +95,14 @@ $$\mathbf{y}_t = \mathbf{C} \mathbf{x}_t + \mathbf{D} \mathbf{u}_t$$
 ### RNN
 
 **隐状态更新：**
-$$h_t = \tanh(\mathbf{W}_{hh} h_{t-1} + \mathbf{W}_{xh} x_t + b_h)$$
+$$
+\mathbf h_t=\tanh(
+\mathbf W_{hh}\mathbf h_{t-1}
++\mathbf W_{xh}\mathbf x_t+\mathbf b_h)
+$$
 
 **输出：**
-$$y_t = \mathbf{W}_{hy} h_t + b_y$$
+$$\mathbf y_t=\mathbf W_{hy}\mathbf h_t+\mathbf b_y$$
 
 ### 联系
 
@@ -117,7 +121,7 @@ RNN并不是处理序列的唯一方法。对于很多一维信号，1D CNN也�
 
 ### 核心思想
 
-1D CNN把卷积核沿时间轴滑动：
+1D CNN 把核沿时间轴滑动。多数深度学习库实现的是不翻转核的互相关，但沿用“卷积层”这一名称：
 
 ```
 输入信号：x[1], x[2], x[3], ..., x[T]
@@ -131,7 +135,7 @@ RNN并不是处理序列的唯一方法。对于很多一维信号，1D CNN也�
 - DSP中的滤波器：手工设计
 - 1D CNN中的卷积核：自动学习
 
-**可以把1D CNN理解为可学习的滤波器组。**
+**可以把 1D CNN 理解为可学习的局部滤波器组。** 与 DSP 卷积比较时要先确认核是否翻转、padding 和 stride 约定。
 
 ### 适用场景
 
@@ -147,15 +151,21 @@ RNN并不是处理序列的唯一方法。对于很多一维信号，1D CNN也�
 
 ### 梯度消失
 
-反向传播时，梯度通过多个时刻相乘，容易变得很小：
+反向传播时，梯度通过多个时刻的 Jacobian 连乘。令
 
-$$\frac{\partial L}{\partial h_1} = \frac{\partial L}{\partial h_T} \prod_{t=2}^{T} \frac{\partial h_t}{\partial h_{t-1}}$$
+$$
+\mathbf J_t=\frac{\partial\mathbf h_t}{\partial\mathbf h_{t-1}},
+\qquad
+\nabla_{\mathbf h_1}L
+=\mathbf J_2^{\mathsf T}\mathbf J_3^{\mathsf T}\cdots
+\mathbf J_T^{\mathsf T}\nabla_{\mathbf h_T}L.
+$$
 
-如果这些导数长期小于1，梯度会指数衰减。
+如果连乘矩阵的算子范数长期收缩，梯度可能近似指数衰减。不能只逐元素判断导数是否“小于 1”。
 
 ### 梯度爆炸
 
-如果这些导数长期大于1，梯度会指数增长。
+如果连乘持续放大某些方向，梯度可能快速增长。
 
 ### 工程含义
 
@@ -165,7 +175,7 @@ $$\frac{\partial L}{\partial h_1} = \frac{\partial L}{\partial h_T} \prod_{t=2}^
 
 ## LSTM和GRU
 
-为了解决RNN的长期依赖问题，出现了门控结构：
+为缓解普通 RNN 的长期依赖与梯度传播问题，出现了门控结构：
 
 ### LSTM
 - 遗忘门：决定丢弃哪些信息
@@ -173,9 +183,9 @@ $$\frac{\partial L}{\partial h_1} = \frac{\partial L}{\partial h_T} \prod_{t=2}^
 - 输出门：决定输出哪些信息
 
 ### GRU
-- LSTM的简化版本
-- 参数更少
-- 训练更高效
+- 使用更新门和重置门管理状态
+- 通常比同隐藏维度的 LSTM 参数少
+- 实际速度与效果取决于实现、硬件和任务
 
 这些结构可以理解为在改进“如何管理状态记忆”。
 

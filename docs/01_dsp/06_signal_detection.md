@@ -50,7 +50,7 @@ $$P_d = 1 - P_{md} = P(\text{判定 } H_1 | H_1 \text{ 真实})$$
 
 ### 权衡关系
 
-**关键观察：** $P_{fa}$ 和 $P_d$ 不能同时很小。
+**关键观察：** 降低虚警率 $P_{fa}$ 与提高检测率 $P_d$ 通常存在阈值权衡；设计目标不是让二者都小。
 
 - 降低阈值 $\gamma$ → $P_d$ 增加，$P_{fa}$ 也增加
 - 提高阈值 $\gamma$ → $P_{fa}$ 减少，$P_d$ 也减少
@@ -63,7 +63,7 @@ $$P_d = 1 - P_{md} = P(\text{判定 } H_1 | H_1 \text{ 真实})$$
 
 ### 最优检验
 
-**Neyman-Pearson引理：** 最优检验是似然比检验。
+**Neyman–Pearson 引理：** 对两个完全指定的简单假设，在虚警概率不超过给定水平的检验中，似然比检验具有最大检测概率。复合假设或未知参数还需要额外处理。
 
 $$\Lambda(y) = \frac{p(y|H_1)}{p(y|H_0)} \stackrel{H_1}{\gtrless} \gamma$$
 
@@ -111,9 +111,9 @@ $$T(y) = \sum_{n} y[n] s[n] \stackrel{H_1}{\gtrless} \gamma$$
 - 曲线是对角线 $P_d = P_{fa}$
 - 检测性能等同于随机猜测
 
-**实际检测器：**
-- 曲线在对角线上方
-- 越接近左上角，性能越好
+**有效检测器：**
+- 合理选择分数方向后，ROC 通常位于对角线上方；若位于下方，可以检查分数方向是否反了
+- 在同一任务、数据分布和正负类定义下，曲线越接近左上角通常越好
 
 ![Signal Detection Performance](/assets/ch01_detection_performance.png)
 
@@ -131,7 +131,7 @@ $$\text{AUC} = \int_0^1 P_d(P_{fa}) dP_{fa}$$
 **性质：**
 - AUC = 1：完美检测器
 - AUC = 0.5：随机检测器
-- AUC越大，检测器越好
+- 在同一任务与数据分布下，AUC 越大表示随机正样本得分高于随机负样本的概率越大；它不编码具体工作点的错误代价
 
 ---
 
@@ -152,7 +152,7 @@ $$T(y) \stackrel{H_1}{\gtrless} \gamma$$
 - 不需要知道信号形式
 
 **缺点：**
-- 性能不如相关检测器
+- 当信号波形已知且模型匹配时，通常不如利用相位与波形信息的相关检测器
 - 对噪声功率估计敏感
 
 ### 2. 相关检测器（Correlation Detector）
@@ -160,7 +160,7 @@ $$T(y) \stackrel{H_1}{\gtrless} \gamma$$
 **适用场景：** 信号已知。
 
 **检验统计量：**
-$$T(y) = \sum_{n=0}^{N-1} y[n] s[n]$$
+$$T(\mathbf y)=\operatorname{Re}\left\{\sum_{n=0}^{N-1}y[n]s^*[n]\right\}$$
 
 **决策规则：**
 $$T(y) \stackrel{H_1}{\gtrless} \gamma$$
@@ -177,21 +177,25 @@ $$T(y) \stackrel{H_1}{\gtrless} \gamma$$
 **思想：** 用与信号相匹配的滤波器。这是卷积在检测中的直接应用。
 
 **冲激响应：**
-$$h[n] = s[N-1-n]$$
+$$h[n] = s^*[N-1-n]$$
 
 其中 $s[n]$ 是待检测的信号，$N$ 是信号长度。
 
 **输出（卷积运算）：**
-$$y_{\text{out}}[n] = \sum_{m=0}^{N-1} y[m] h[n-m] = \sum_{m=0}^{N-1} y[m] s[N-1-n+m]$$
+$$
+y_{\text{out}}[n]
+=\sum_m y[m]h[n-m]
+=\sum_m y[m]s^*[N-1-n+m].
+$$
 
 **在 $n = N-1$ 时的输出：**
-$$y_{\text{out}}[N-1] = \sum_{m=0}^{N-1} y[m] s[m] = T(y)$$
+$$y_{\text{out}}[N-1]=\sum_{m=0}^{N-1}y[m]s^*[m]$$
 
-这正好是相关检测器的统计量！
+这正好得到相关检测器所使用的复内积。
 
 **与相关检测器的关系：**
-- **相关检测器**：直接计算 $T(y) = \sum_{n=0}^{N-1} y[n] s[n]$
-- **匹配滤波器**：通过卷积实现相同的功能，在 $n = N-1$ 时输出等于 $T(y)$
+- **相关检测器**：直接计算复内积，并根据假设取实部、幅度或幅度平方
+- **匹配滤波器**：通过卷积得到复内积；在上述取实部的检验中，$T(\mathbf y)=\operatorname{Re}\{y_{\text{out}}[N-1]\}$
 - **本质**：两者都是卷积运算，只是实现方式不同
 
 **优点：**
@@ -202,7 +206,7 @@ $$y_{\text{out}}[N-1] = \sum_{m=0}^{N-1} y[m] s[m] = T(y)$$
 
 **缺点：**
 - 需要精确知道信号形式
-- 计算复杂度较高（$O(N^2)$），可用FFT加速到 $O(N\log N)$
+- 单个已知对齐位置的内积为 $O(N)$；若要扫描大量时延，直接相关的总成本更高，可根据长度和硬件使用 FFT 加速
 
 **应用场景：**
 - 雷达系统：检测已知脉冲信号
@@ -216,17 +220,22 @@ $$y_{\text{out}}[N-1] = \sum_{m=0}^{N-1} y[m] s[m] = T(y)$$
 
 ### 信噪比（Signal-to-Noise Ratio, SNR）
 
-**定义：**
-$$\text{SNR} = \frac{P_s}{P_n} = \frac{\sum_{n} s[n]^2}{\sigma^2}$$
+**定义：** SNR 必须结合观测区间和归一化方式说明。对上面的长度有限、已知确定性实信号，常用匹配滤波输出 SNR 为
 
-其中 $P_s$ 是信号功率，$P_n$ 是噪声功率。
+$$
+\operatorname{SNR}_{\mathrm{out}}
+=\frac{E_s}{\sigma^2}
+=\frac{\sum_n s[n]^2}{\sigma^2},
+$$
+
+其中 $E_s$ 是该观测区间内的信号能量，$\sigma^2$ 是每个实采样点的噪声方差。这不是“平均信号功率除以平均噪声功率”的唯一通用定义。
 
 **单位：** dB（分贝）
-$$\text{SNR}_{\text{dB}} = 10 \log_{10}(\text{SNR})$$
+$$\operatorname{SNR}_{\mathrm{out,dB}} = 10 \log_{10}(\operatorname{SNR}_{\mathrm{out}})$$
 
 ### 检测性能与SNR的关系
 
-**高斯信号的检测性能：**
+**已知确定性实信号在 AWGN 下的检测性能：**
 
 对于相关检测器，检验统计量 $T(y)$ 在两个假设下的分布为：
 
@@ -234,7 +243,10 @@ $$T(y) | H_0 \sim \mathcal{N}(0, \sigma^2 \|s\|^2)$$
 $$T(y) | H_1 \sim \mathcal{N}(\|s\|^2, \sigma^2 \|s\|^2)$$
 
 **检测概率：**
-$$P_d = Q\left(\sqrt{2 \cdot \text{SNR}} - Q^{-1}(P_{fa})\right)$$
+$$
+P_d
+=Q\left(Q^{-1}(P_{fa})-\sqrt{\operatorname{SNR}_{\mathrm{out}}}\right).
+$$
 
 其中 $Q(x) = \frac{1}{\sqrt{2\pi}} \int_x^{\infty} e^{-t^2/2} dt$ 是Q函数。
 

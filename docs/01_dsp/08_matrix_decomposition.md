@@ -23,7 +23,7 @@ $$\mathbf{A} = \mathbf{U} \boldsymbol{\Sigma} \mathbf{V}^H$$
 
 ### 特征值分解（Eigenvalue Decomposition, EVD）
 
-**定义：** 对于方阵 $\mathbf{A}$，存在特征向量和特征值。
+**定义：** 在复数域上，方阵 $\mathbf A$ 总存在特征值，但只有当它有一组完备的线性无关特征向量、即可以对角化时，才能写成
 
 $$\mathbf{A} = \mathbf{Q} \boldsymbol{\Lambda} \mathbf{Q}^{-1}$$
 
@@ -39,12 +39,12 @@ $$\mathbf{A} = \mathbf{Q} \boldsymbol{\Lambda} \mathbf{Q}^H$$
 
 ### QR分解
 
-**定义：** 矩阵分解为正交矩阵和上三角矩阵的乘积。
+**定义：** 对 $m\geq n$ 的矩阵，约化 QR 分解可写成具有标准正交列的矩阵与上三角矩阵的乘积。
 
 $$\mathbf{A} = \mathbf{Q} \mathbf{R}$$
 
 其中：
-- $\mathbf{Q}$：$m \times n$ 正交矩阵
+- $\mathbf{Q}$：$m \times n$、满足 $\mathbf Q^{\mathsf H}\mathbf Q=\mathbf I$ 的矩阵
 - $\mathbf{R}$：$n \times n$ 上三角矩阵
 
 **应用：** 数值稳定的最小二乘求解。
@@ -72,15 +72,27 @@ x[N-M] & x[N-M+1] & \cdots & x[N-1]
 
 ### 协方差矩阵
 
-**定义：** 信号的二阶统计特性。
+**定义：** 对随机向量 $\mathbf x$，协方差矩阵必须先减去均值 $\boldsymbol\mu=\mathbb E[\mathbf x]$：
 
-$$\mathbf{R} = E[\mathbf{x} \mathbf{x}^H]$$
+$$
+\mathbf C
+=\mathbb E[(\mathbf x-\boldsymbol\mu)(\mathbf x-\boldsymbol\mu)^{\mathsf H}].
+$$
 
-**样本协方差矩阵：**
-$$\hat{\mathbf{R}} = \frac{1}{N} \sum_{n=0}^{N-1} \mathbf{x}[n] \mathbf{x}^H[n]$$
+$\mathbf R=\mathbb E[\mathbf x\mathbf x^{\mathsf H}]$ 是未中心化二阶矩；仅在 $\boldsymbol\mu=\mathbf0$ 时与协方差相同。
+
+**样本协方差矩阵：** 对 $N$ 个随机向量样本 $\mathbf x_n$，一种无偏估计为
+
+$$
+\widehat{\mathbf C}
+=\frac1{N-1}\sum_{n=1}^{N}
+(\mathbf x_n-\bar{\mathbf x})(\mathbf x_n-\bar{\mathbf x})^{\mathsf H}.
+$$
+
+部分信号处理实现使用 $1/N$ 的有偏估计，应在实验中说明归一化约定。
 
 **性质：**
-- Hermitian矩阵：$\mathbf{R} = \mathbf{R}^H$
+- Hermitian矩阵：$\mathbf{C} = \mathbf{C}^{\mathsf H}$
 - 半正定：所有特征值 $\geq 0$
 - 特征值反映信号的功率分布
 
@@ -131,8 +143,8 @@ $$y[n] = \sum_{k=1}^{K} A_k e^{j2\pi f_k n} + w[n]$$
    找到 $P_{\text{MUSIC}}(f)$ 的 $K$ 个最大峰值
 
 **优点：**
-- 高分辨率：能分离接近的频率
-- 在模型匹配和高SNR等条件下，性能可接近CRB
+- 在模型阶数正确、快拍数和 SNR 足够等条件下，分辨率可以高于普通周期图
+- 在模型匹配和高 SNR 等条件下，估计方差可能接近 CRB
 
 ![Matrix Decomposition](/assets/ch01_matrix_decomposition.png)
 
@@ -149,10 +161,10 @@ $$y[n] = \sum_{k=1}^{K} A_k e^{j2\pi f_k n} + w[n]$$
 
 **思想：** 利用信号的旋转不变性。
 
-**优点：**
-- 不需要知道导向向量
-- 计算复杂度低
-- 性能好
+**特点：**
+- 利用移位不变结构直接估计参数，不需要像 MUSIC 那样进行谱峰搜索
+- 仍依赖阵列或数据模型满足相应的移位不变条件
+- 计算量和估计性能取决于矩阵规模、模型匹配程度与 SNR
 
 **应用：** 频率估计、到达角估计
 
@@ -181,7 +193,9 @@ $$y[n] = \sum_{k=1}^{K} A_k e^{j2\pi f_k n} + w[n]$$
    选择特征值最大的 $K$ 个特征向量
 
 5. **降维**
-   $$\mathbf{Y} = \mathbf{X}_c \mathbf{Q}[:, 1:K]$$
+   $$\mathbf{Y} = \mathbf{X}_c \mathbf{Q}_{[:,\,1:K]}$$
+
+   这里 $\mathbf Q_{[:,\,1:K]}$ 表示按数学编号取前 $K$ 个特征向量；若使用 Python，则对应切片通常是 `Q[:, :K]`。
 
 ### 在信号处理中的应用
 
@@ -217,10 +231,10 @@ PCA、SVD 以及基于滤波器组的特征（如 MFCC、HOG、SIFT）都可用�
 
 **思想：** 用少数主成分表示原始数据。
 
-**压缩率：**
-$$\text{压缩率} = \frac{K}{D} \times 100\%$$
+**保留维度比例：**
+$$\text{保留维度比例} = \frac{K}{D} \times 100\%$$
 
-其中 $K$ 是保留的主成分数，$D$ 是原始维数。
+其中 $K$ 是保留的主成分数，$D$ 是原始维数。若讨论存储压缩率，还必须计入投影矩阵、样本数和数值精度，不能只用 $K/D$ 表示。
 
 ---
 
@@ -236,9 +250,7 @@ $$\mathbf{A}_r = \sum_{i=1}^{r} \sigma_i \mathbf{u}_i \mathbf{v}_i^H$$
 
 其中 $r < \text{rank}(\mathbf{A})$。
 
-**性质：**
-- 最小化Frobenius范数误差
-- 保留最重要的信息
+**性质：** 根据 Eckart--Young--Mirsky 定理，截断 SVD 在所有秩不超过 $r$ 的矩阵中最小化 Frobenius 范数和谱范数近似误差。它保留的是奇异值意义下能量最大的方向，不等价于保留任意任务所需的全部信息。
 
 ### 信号去噪
 

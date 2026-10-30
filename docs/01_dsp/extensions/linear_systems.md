@@ -48,7 +48,7 @@ $$h[n] = T(\delta[n])$$
 ### 系统的输出
 
 对于 LTI 系统，任意输入的输出可以表示为：
-$$y[n] = \sum_{k=-\infty}^{\infty} x[k] h[n-k] = x[n] * h[n]$$
+$$y[n] = \sum_{k=-\infty}^{\infty} x[k] h[n-k] = (x*h)[n]$$
 
 **直观理解**：输出是输入与冲激响应的卷积。
 
@@ -82,8 +82,8 @@ $$H(e^{j\omega}) = \text{DTFT}(h[n])$$
 
 ### BIBO 稳定性
 
-**定义**：有界输入产生有界输出
-$$|x[n]| < \infty \Rightarrow |y[n]| < \infty$$
+**定义**：任意一致有界输入都产生一致有界输出
+$$\sup_n|x[n]|<\infty\Rightarrow\sup_n|y[n]|<\infty$$
 
 ### 稳定性条件
 
@@ -95,7 +95,7 @@ $$\sum_{n=-\infty}^{\infty} |h[n]| < \infty$$
 **传递函数：**
 $$H(z) = \frac{B(z)}{A(z)} = \frac{\sum_{k=0}^{M} b_k z^{-k}}{1 + \sum_{k=1}^{N} a_k z^{-k}}$$
 
-**稳定性条件**：所有极点在单位圆内
+**稳定性条件**：对因果有理离散时间 LTI 系统，BIBO 稳定等价于所有极点严格位于单位圆内
 $$|p_i| < 1$$
 
 ---
@@ -256,7 +256,7 @@ Observe → Reason → Act → Observe → ...
 **有限脉冲响应**：冲激响应有限长
 
 **优势：**
-- 总是稳定的
+- 系数有限时冲激响应绝对可和，因此满足 BIBO 稳定
 - 可以设计线性相位
 
 **劣势：**
