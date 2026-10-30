@@ -1,13 +1,67 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 430" role="img" aria-labelledby="title desc">
-  <title id="title">从信号处理到智能系统的教程主线</title><desc id="desc">信息经过表示、变换、检测预测、生成对齐和工程反馈，逐步成为可用智能系统。</desc>
-  <style>text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","Microsoft YaHei",sans-serif;fill:#172033}.t{font-size:25px;font-weight:700}.s{font-size:16px;fill:#526076}.n{font-size:18px;font-weight:700}.a{stroke:#7b879d;stroke-width:3;fill:none;marker-end:url(#arrow)}</style>
-  <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#7b879d"/></marker></defs>
-  <rect width="1440" height="430" rx="24" fill="#f8fafc"/><text x="64" y="64" class="t">从信号到智能：全教程的一条信息处理主线</text><text x="64" y="96" class="s">每章回答一个问题：信息如何被表示、组合、判断、生成，并在真实系统中持续改进？</text>
-  <g transform="translate(64 156)"><rect width="202" height="132" rx="18" fill="#dbeafe"/><text x="22" y="48" class="n">① 信号与观测</text><text x="22" y="78" class="s">时域 · 频域 · 噪声</text><text x="22" y="104" class="s">第 1 章</text></g>
-  <g transform="translate(286 156)"><rect width="202" height="132" rx="18" fill="#e0e7ff"/><text x="22" y="48" class="n">② 表示与学习</text><text x="22" y="78" class="s">目标 · 损失 · 特征</text><text x="22" y="104" class="s">第 2–3 章</text></g>
-  <g transform="translate(508 156)"><rect width="202" height="132" rx="18" fill="#ede9fe"/><text x="22" y="48" class="n">③ 动态聚合</text><text x="22" y="78" class="s">注意力 · 位置 · 掩码</text><text x="22" y="104" class="s">第 4 章</text></g>
-  <g transform="translate(730 156)"><rect width="202" height="132" rx="18" fill="#ffedd5"/><text x="22" y="48" class="n">④ 预测与生成</text><text x="22" y="78" class="s">概率 · 采样 · 对齐</text><text x="22" y="104" class="s">第 5 章</text></g>
-  <g transform="translate(952 156)"><rect width="202" height="132" rx="18" fill="#dcfce7"/><text x="22" y="48" class="n">⑤ 应用与多模态</text><text x="22" y="78" class="s">Prompt · RAG · Agent</text><text x="22" y="104" class="s">第 6–7 章</text></g>
-  <g transform="translate(1174 156)"><rect width="202" height="132" rx="18" fill="#ccfbf1"/><text x="22" y="48" class="n">⑥ 工程反馈</text><text x="22" y="78" class="s">评估 · 成本 · 可靠性</text><text x="22" y="104" class="s">第 8 章</text></g>
-  <path d="M267 222H277M489 222H499M711 222H721M933 222H943M1155 222H1165" class="a"/><path d="M1275 300 C1275 370,387 370,387 300" class="a"/><text x="670" y="386" class="s">质量、成本、可靠性与用户反馈回到下一轮表示、目标和系统设计</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1360 650" role="img" aria-labelledby="title desc">
+  <title id="title">从信号表示到智能系统部署的八章学习主线</title>
+  <desc id="desc">教程从第1章信号表示出发，依次经过优化、可学习表示、注意力、预测生成、应用选型、多模态对齐和系统部署，并通过工程反馈形成闭环。</desc>
+  <style>
+    text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans CJK SC","Microsoft YaHei",sans-serif;fill:#172033}
+    .title{font-size:28px;font-weight:700}.subtitle{font-size:17px;fill:#526076}
+    .chapter{font-size:16px;font-weight:700;fill:#526076}.name{font-size:21px;font-weight:700}.detail{font-size:16px;fill:#526076}
+    .arrow{stroke:#718096;stroke-width:3;fill:none;marker-end:url(#arrow)}.feedback{stroke:#0f766e;stroke-width:3;fill:none;stroke-dasharray:8 7;marker-end:url(#feedback-arrow)}
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#718096"/></marker>
+    <marker id="feedback-arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#0f766e"/></marker>
+  </defs>
+
+  <rect width="1360" height="650" rx="26" fill="#f8fafc"/>
+  <text x="60" y="58" class="title">从信号到智能：八章共用一条信息处理主线</text>
+  <text x="60" y="90" class="subtitle">每一章引入新的建模能力，同时保留“表示—目标—约束—验证”的工程视角</text>
+
+  <g transform="translate(60 135)">
+    <rect width="280" height="150" rx="18" fill="#dbeafe"/>
+    <text x="22" y="36" class="chapter">第 1 章</text><text x="22" y="72" class="name">信号表示与变换</text>
+    <text x="22" y="105" class="detail">时域 · 频域 · 状态空间</text><text x="22" y="130" class="detail">先回答“信息是什么”</text>
+  </g>
+  <g transform="translate(380 135)">
+    <rect width="280" height="150" rx="18" fill="#e0e7ff"/>
+    <text x="22" y="36" class="chapter">第 2 章</text><text x="22" y="72" class="name">估计、损失与优化</text>
+    <text x="22" y="105" class="detail">统计估计 · 迭代更新</text><text x="22" y="130" class="detail">明确目标与误差</text>
+  </g>
+  <g transform="translate(700 135)">
+    <rect width="280" height="150" rx="18" fill="#ede9fe"/>
+    <text x="22" y="36" class="chapter">第 3 章</text><text x="22" y="72" class="name">可学习表示</text>
+    <text x="22" y="105" class="detail">MLP · CNN · RNN</text><text x="22" y="130" class="detail">从人工特征到层级特征</text>
+  </g>
+  <g transform="translate(1020 135)">
+    <rect width="280" height="150" rx="18" fill="#fae8ff"/>
+    <text x="22" y="36" class="chapter">第 4 章</text><text x="22" y="72" class="name">注意力与 Transformer</text>
+    <text x="22" y="105" class="detail">内容寻址 · 位置 · 掩码</text><text x="22" y="130" class="detail">按上下文动态组合信息</text>
+  </g>
+
+  <path d="M342 210H370M662 210H690M982 210H1010" class="arrow"/>
+  <path d="M1160 295V325" class="arrow"/>
+
+  <g transform="translate(1020 340)">
+    <rect width="280" height="150" rx="18" fill="#ffedd5"/>
+    <text x="22" y="36" class="chapter">第 5 章</text><text x="22" y="72" class="name">预测与生成</text>
+    <text x="22" y="105" class="detail">Token 概率 · 采样 · 对齐</text><text x="22" y="130" class="detail">从预测目标到生成能力</text>
+  </g>
+  <g transform="translate(700 340)">
+    <rect width="280" height="150" rx="18" fill="#fef3c7"/>
+    <text x="22" y="36" class="chapter">第 6 章</text><text x="22" y="72" class="name">LLM 应用选型</text>
+    <text x="22" y="105" class="detail">Prompt · 微调 · RAG · Agent</text><text x="22" y="130" class="detail">按问题选择系统能力</text>
+  </g>
+  <g transform="translate(380 340)">
+    <rect width="280" height="150" rx="18" fill="#dcfce7"/>
+    <text x="22" y="36" class="chapter">第 7 章</text><text x="22" y="72" class="name">多模态表示对齐</text>
+    <text x="22" y="105" class="detail">视觉 · 非视觉信号 · 语言</text><text x="22" y="130" class="detail">把不同观测映射到共同语义</text>
+  </g>
+  <g transform="translate(60 340)">
+    <rect width="280" height="150" rx="18" fill="#ccfbf1"/>
+    <text x="22" y="36" class="chapter">第 8 章</text><text x="22" y="72" class="name">系统评估与部署</text>
+    <text x="22" y="105" class="detail">质量 · 延迟 · 资源 · 成本</text><text x="22" y="130" class="detail">在真实约束下验收闭环</text>
+  </g>
+
+  <path d="M1018 415H990M698 415H670M378 415H350" class="arrow"/>
+  <path d="M200 500 C200 560,35 560,35 210 H50" class="feedback"/>
+  <text x="300" y="555" class="subtitle">部署与评估暴露的问题，回到表示、目标、数据和系统设计中继续迭代</text>
 </svg>
