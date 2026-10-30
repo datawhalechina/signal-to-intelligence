@@ -24,8 +24,9 @@
 - **如何维护代码、测试、Notebook、图片、模型、数据集和文档站？** → [项目维护说明](E_project_maintenance.md)
 - **如何下载模型和数据集？** → [模型获取指南](B_model_sources.md)
 - **如何容器化和云部署？** → [Docker/CNB 部署指南](B_docker_cnb.md)
-- **数学基础和快速参考** → [数学速查表](D_math_quick_reference.md)
-- **数学深度内容** → [数学参考文档](A_math_reference.md)
+- **某一章需要先补什么数学？** → [数学前置导航](D_math_quick_reference.md)
+- **符号、公式、维度和适用条件** → [数学与符号参考](A_math_reference.md)
+- **跨章节术语和易混概念** → [术语表](G_glossary.md)
 
 ---
 
@@ -52,9 +53,11 @@
 
 | 文档 | 用途 |
 |------|------|
-| **[A_math_reference.md](A_math_reference.md)** | 数学基础深度讲解（复数、线性代数、信息论等） |
-| **[D_math_quick_reference.md](D_math_quick_reference.md)** | 数学概念速查表 |
+| **[A_math_reference.md](A_math_reference.md)** | 全教程统一符号、公式、维度与适用条件 |
+| **[D_math_quick_reference.md](D_math_quick_reference.md)** | 按章节组织的数学前置导航与掌握标准 |
 | **[E_project_maintenance.md](E_project_maintenance.md)** | 项目维护约定：单一源头、图片同步、测试、Notebook、模型/数据集 registry、文档站发布、Makefile |
+| **[F_visual_guide.md](F_visual_guide.md)** | 图片类型、编号、存放位置和验证规则 |
+| **[G_glossary.md](G_glossary.md)** | 规范术语、英文缩写和跨领域概念边界 |
 
 ---
 

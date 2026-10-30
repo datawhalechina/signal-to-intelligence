@@ -54,4 +54,4 @@ Prompt 改变当前输入，微调改变模型参数，RAG 引入外部信息，
 2. 完成章节入口列出的最低实践，并修改一个关键参数；
 3. 能解释一次成功结果和一次失败或限制。
 
-遇到数学、环境或代码问题时，分别查阅[数学备忘](../appendix/A_math_reference.md)、[环境配置](../appendix/B_environment_setup.md)和[代码运行指南](../appendix/C_code_guide.md)。
+遇到数学、环境或代码问题时，分别查阅[数学与符号参考](../appendix/A_math_reference.md)、[环境配置](../appendix/B_environment_setup.md)和[代码运行指南](../appendix/C_code_guide.md)。

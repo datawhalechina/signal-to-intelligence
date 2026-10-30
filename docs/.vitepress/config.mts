@@ -291,12 +291,13 @@ export default defineConfig({
         text: '附录',
         link: '/appendix/',
         items: [
-          { text: 'A 数学参考', link: '/appendix/A_math_reference' },
+          { text: 'A 数学与符号参考', link: '/appendix/A_math_reference' },
           { text: 'B 环境配置', link: '/appendix/B_environment_setup' },
           { text: 'C 代码运行指南', link: '/appendix/C_code_guide' },
-          { text: 'D 数学基础速查表', link: '/appendix/D_math_quick_reference' },
+          { text: 'D 数学前置导航', link: '/appendix/D_math_quick_reference' },
           { text: 'E 项目维护说明', link: '/appendix/E_project_maintenance' },
-          { text: 'F 图像与可视化规范', link: '/appendix/F_visual_guide' }
+          { text: 'F 图像与可视化规范', link: '/appendix/F_visual_guide' },
+          { text: 'G 术语表', link: '/appendix/G_glossary' }
         ]
       }
     ],

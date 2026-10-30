@@ -63,9 +63,10 @@ make test
 
 ## 附录入口
 
-- [附录 A：数学备忘](/appendix/A_math_reference)
+- [附录 A：数学与符号参考](/appendix/A_math_reference)
 - [附录 B：环境配置](/appendix/B_environment_setup)
 - [附录 C：代码运行指南](/appendix/C_code_guide)
-- [附录 D：数学基础速查](/appendix/D_math_quick_reference)
+- [附录 D：数学前置导航](/appendix/D_math_quick_reference)
 - [附录 E：项目维护说明](/appendix/E_project_maintenance)
 - [附录 F：图像与可视化规范](/appendix/F_visual_guide)
+- [附录 G：术语表](/appendix/G_glossary)

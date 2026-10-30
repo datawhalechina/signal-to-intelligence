@@ -94,7 +94,7 @@ make run-exp-ch04
 | [第7章：多模态LLM](docs/07_multimodal_llm/README.md) | 6 | 从视觉主干到信号—语言对齐 | [2 个扩展](docs/07_multimodal_llm/README.md#扩展内容) | 已完成 |
 | [第8章：LLM工程实践与部署](docs/08_llm_engineering/README.md) | 6 | 云端生产闭环与端侧联合验收 | [2 个扩展](docs/08_llm_engineering/README.md#扩展阅读) | 已完成 |
 
-代码细目和运行方式见 [附录 C：代码运行指南](docs/appendix/C_code_guide.md)，数学扩展导航见 [附录 D：数学基础速查表](docs/appendix/D_math_quick_reference.md)。章节项目和综合项目见 [`projects/`](projects/README.md)。
+代码细目和运行方式见 [附录 C：代码运行指南](docs/appendix/C_code_guide.md)，数学前置导航见 [附录 D：数学前置导航](docs/appendix/D_math_quick_reference.md)。章节项目和综合项目见 [`projects/`](projects/README.md)。
 
 ---
 
