@@ -30,7 +30,7 @@ make test-cov
 make run-exp-ch01   # 离线，<5s
 make run-exp-ch05   # 离线（8个脚本）
 make run-exp-ch05-api  # 需要 llama.cpp / Ollama 或 API Key
-make run-exp-ch08   # 离线，仅标准库
+make run-exp-ch08   # 离线，运行第8章 4 个模拟/估算脚本
 make test
 ```
 
@@ -92,10 +92,9 @@ pip install openai-clip
 make run-exp-ch07-heavy
 ```
 
-### 场景 4️⃣：用云端环境（Google Colab / CNB）
+### 场景 4️⃣：使用 Google Colab
 
-✅ **都能运行**（Colab 有免费 T4 GPU）  
-**推荐：** CNB（预配置所有依赖）
+Colab 可运行各章 Notebook，但可用 CPU/GPU、会话时长和预装依赖由当前运行时决定。Notebook 会复用仓库 `code/`，需要额外模型或 GPU 的单元仍应按页面说明安装依赖并检查资源。当前没有经过维护者验证的 CNB 一键入口。
 
 ---
 
@@ -112,7 +111,7 @@ make run-exp-ch07-heavy
 | 第5章 LLM基础 | numpy, matplotlib, scipy | openai, anthropic² | llama.cpp / Ollama（本地）或任一 API Key |
 | 第6章 LLM应用 | numpy, matplotlib | langchain, faiss-cpu³ | — |
 | 第7章 多模态 | numpy, matplotlib | torch, Pillow, seaborn, openai-clip⁴ | `clip_alignment_demo.py` 首次运行下载 CLIP 权重⁵ |
-| 第8章 工程实践 | — （仅标准库） | — | — |
+| 第8章 工程实践 | numpy | — | — |
 
 **注释：**
 1. `networkx` 仅 `ch04_transformer/graph_theory_demo.py` 使用，不在 `make run-exp-ch04` 中：`pip install networkx`
@@ -153,7 +152,7 @@ make run-exp-ch07-heavy
 | `music_algorithm.py` | MUSIC 超分辨率算法 | scipy | `ch01_matrix_decomposition*.png` |
 | `stochastic_processes_demo.py` | 随机过程演示 | scipy | `ch01_stochastic_processes.png` |
 
-#### 测试文件：`tests/test_ch01_dsp.py`（8 个测试）
+#### 测试文件：`tests/test_ch01_dsp.py`
 
 | 测试类 | 覆盖内容 |
 |-------|---------|
@@ -186,13 +185,14 @@ env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch01_dsp.py -q
 | `decision_tree_random_forest.py` | 决策树与随机森林 | — | `ch02_decision_tree_random_forest.png` |
 | `svm_kernel.py` | SVM 核函数可视化 | — | `ch02_svm_kernel.png` |
 
-#### 测试文件（2 个文件，12 个测试）
+#### 测试文件：`tests/test_ch02_optimization.py`、`tests/test_ch02_ml_extended.py`
 
 | 文件 | 测试类 | 覆盖内容 |
 |------|-------|---------|
 | `test_ch02_optimization.py` | `TestLMSOptimizer` | LMS 收敛、权重估计 |
 | `test_ch02_optimization.py` | `TestAdamOptimizer` | Adam 收敛、Adam vs LMS 性能 |
 | `test_ch02_ml_extended.py` | `TestLinearRegression` | 线性回归收敛、参数估计 |
+| `test_ch02_ml_extended.py` | `TestMMSEvsNN` | MMSE 与神经网络估计对照 |
 | `test_ch02_ml_extended.py` | `TestLogisticRegression` | 逻辑回归收敛、分类准确率 |
 | `test_ch02_ml_extended.py` | `TestSVM` | SVM 收敛性 |
 | `test_ch02_ml_extended.py` | `TestDecisionTree` | 基尼系数、纯节点判定 |
@@ -223,12 +223,14 @@ env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch02_optimizati
 | `detection_segmentation_demo.py` | 目标检测与分割对比 | — | `ch03_yolo_vs_segmentation.png` 等 |
 | `sequence_models_1d_signal.py` | 序列模型处理一维信号 | — | `ch03_sequence_models.png` |
 
-#### 测试文件：`tests/test_ch03_deep_learning.py`（5 个测试）
+#### 测试文件：`tests/test_ch03_deep_learning.py`
 
 | 测试类 | 覆盖内容 |
 |-------|---------|
 | `TestPolynomialVsMLP` | MLP 输出形状、非线性能力 |
+| `TestCNNStructure` | CNN 卷积与池化结构 |
 | `TestRNNStructure` | 隐状态形状、隐状态演化、激活值有界性 |
+| `TestSequenceModels1DSignal` | 一维序列模型输出与形状 |
 
 ```bash
 env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch03_deep_learning.py -q
@@ -255,12 +257,13 @@ env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch03_deep_learn
 | `positional_encoding.py` | 位置编码热力图 | — | `ch04_positional_encoding.png` |
 | `graph_theory_demo.py` | 图论基础与注意力图 | **networkx** | `ch04_graph_theory.png`, `ch04_attention_graph.png` |
 
-#### 测试文件：`tests/test_ch04_transformer.py`（5 个测试）
+#### 测试文件：`tests/test_ch04_transformer.py`
 
 | 测试类 | 覆盖内容 |
 |-------|---------|
 | `TestSelfAttention` | 注意力输出形状、权重归一化、多头注意力 |
 | `TestTransformerBlock` | LayerNorm 稳定性、前馈网络 |
+| `TestTransformerDemos` | 因果 Mask、缩放与位置编码实验入口 |
 
 ```bash
 env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch04_transformer.py -q
@@ -305,13 +308,14 @@ export DEEPSEEK_API_KEY="your-key"
 python code/ch05_llm_basics/llm_api_demo.py
 ```
 
-#### 测试文件：`tests/test_ch05_llm_basics.py`（5 个测试）
+#### 测试文件：`tests/test_ch05_llm_basics.py`
 
 | 测试类 | 覆盖内容 |
 |-------|---------|
 | `TestScalingLaws` | 损失随模型/数据规模下降规律 |
 | `TestInContextLearning` | Few-shot 学习、Prompt 工程效果 |
 | `TestTokenization` | Token 计数 |
+| `TestChapter5Demos` | 第 5 章离线实验入口与结果结构 |
 
 ```bash
 env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch05_llm_basics.py -q
@@ -327,19 +331,20 @@ env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch05_llm_basics
 
 | 脚本 | 说明 | 输出图表 | 运行时间 |
 |------|------|---------|---------|
-| `prompt_demo.py` | Zero-shot / Few-shot / CoT 效果对比 | `assets/ch06_prompt_techniques.png` | <1s |
+| `prompt_demo.py` | Zero-shot / Few-shot / CoT 场景示意，不是 Benchmark | `assets/ch06_prompt_techniques.png` | <1s |
 | `finetuning_demo.py` | LoRA 不同 rank 下参数量对比 | `assets/ch06_lora_parameters.png` | <1s |
-| `rag_demo.py` | RAG 检索增强生成（模拟 embedding） | `assets/ch06_rag_vector_search.png` | <1s |
+| `rag_demo.py` | 字符 n-gram 词法向量基线与二维 embedding 几何示意 | `assets/ch06_rag_vector_search.png` | <1s |
 | `agent_demo.py` | ReAct Agent 框架演示（规则替代 LLM） | `assets/ch06_agent_error_accumulation.png` | <1s |
-| `system_design_demo.py` | Prompt/RAG/微调/Agent 方案选型雷达图 | `assets/ch06_system_design.png` | <1s |
+| `system_design_demo.py` | 基于显式场景假设的方案选型图，不是通用排名 | `assets/ch06_system_design.png` | <1s |
 
-#### 测试文件：`tests/test_ch06_llm_applications.py`（4 个测试）
+#### 测试文件：`tests/test_ch06_llm_applications.py`
 
 | 测试类 | 覆盖内容 |
 |-------|---------|
 | `TestRAGSystem` | 文档检索、上下文增强 |
-| `TestFineTuning` | 微调收敛性 |
+| `TestFineTuning` | LoRA 参数量随 rank 的变化 |
 | `TestAgentFramework` | Agent 决策逻辑 |
+| `TestPromptAndSystemDesign` | 示意数据标记、图表输入和方案结构 |
 
 ```bash
 env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch06_llm_applications.py -q
@@ -383,13 +388,14 @@ pip install -e ".[hf]"
 pip install openai-clip  # clip_alignment_demo 额外需要
 ```
 
-#### 测试文件：`tests/test_ch07_multimodal.py`（6 个测试）
+#### 测试文件：`tests/test_ch07_multimodal.py`
 
 | 测试类 | 覆盖内容 |
 |-------|---------|
 | `TestVisionTransformer` | 图像分块逻辑、patch embedding |
 | `TestCLIPModel` | 图文对齐、对比学习损失 |
 | `TestHighResolutionProcessing` | 动态分块方法、分辨率自适应 |
+| `TestChapter7Demos` | 第 7 章离线实验入口与结果结构 |
 
 ```bash
 env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch07_multimodal.py -q
@@ -399,21 +405,27 @@ env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest tests/test_ch07_multimodal
 
 ### 第8章：LLM工程实践
 
-> ⭐ **完全离线** — 仅需标准库（time, json, dataclasses, enum），无需任何依赖安装
+> ⭐ **完全离线** — 使用标准库和 numpy，不需要 API、模型下载或 GPU
 
 #### 主力脚本（`make run-exp-ch08`）
 
 | 脚本 | 说明 | 输出 | 运行时间 |
 |------|------|------|---------|
-| `llm_engineering_demo.py` | 模型选型、成本优化、错误处理、监控演示 | 终端输出（无图表） | <1s |
+| `quantization_demo.py` | 合成权重上的量化误差、剪枝上界和蒸馏示意 | 终端输出 | <1s |
+| `inference_benchmark.py` | KV cache 公式与延迟/吞吐模拟，不是硬件实测 | 终端输出 | <1s |
+| `cost_calculator.py` | 使用示意价格卡演示成本算术 | 终端输出 | <1s |
+| `llm_engineering_demo.py` | 可注入模型目录、成本、重试与告警阈值 | 终端输出 | <1s |
 
-#### 测试文件：`tests/test_ch08_engineering.py`（8 个测试）
+#### 测试文件：`tests/test_ch08_engineering.py`
 
 | 测试类 | 覆盖内容 |
 |-------|---------|
-| `TestModelDeployment` | 模型量化逻辑、缓存机制 |
-| `TestCostOptimization` | 批处理优化、模型选择策略 |
-| `TestSafetyAlignment` | 内容过滤、输出验证 |
+| `TestCompressionScripts` | 量化误差、剪枝内核边界和蒸馏示意 |
+| `TestInferenceBenchmarkScripts` | KV cache、GQA 与模拟吞吐 |
+| `TestCostCalculatorScripts` | 示意价格卡、缓存和路由成本 |
+| `TestModelSelection` | 可注入模型目录和筛选条件 |
+| `TestCostOptimization` | 请求规模与 token 成本算术 |
+| `TestRetryStrategy` | 重试条件与退避上限 |
 | `TestMonitoring` | 性能指标采集、错误追踪 |
 
 ```bash
@@ -452,18 +464,7 @@ $env:OPENAI_API_KEY="sk-..."
 $env:ANTHROPIC_API_KEY="sk-ant-..."
 ```
 
-**方法2：** 在代码中设置
-
-```python
-import os
-os.environ["DEEPSEEK_API_KEY"] = "your-key"
-os.environ["DASHSCOPE_API_KEY"] = "your-key"
-os.environ["ZHIPUAI_API_KEY"] = "your-key"
-os.environ["OPENAI_API_KEY"] = "sk-..."
-os.environ["ANTHROPIC_API_KEY"] = "sk-ant-..."
-```
-
-**方法3：** 使用 .env 文件
+**方法2：** 使用不提交到 Git 的 `.env` 文件
 
 创建 `.env` 文件：
 ```
@@ -493,16 +494,15 @@ load_dotenv()
 # 检查网络连接
 ping api.openai.com
 
-# 检查 API 密钥是否正确
-python -c "import os; print(os.environ.get('OPENAI_API_KEY'))"
+# 只检查变量是否存在，不打印密钥内容
+python -c "import os; print(bool(os.environ.get('OPENAI_API_KEY')))"
 
-# 查看 API 使用情况和配额
-# 访问 https://platform.openai.com/account/usage/overview
+# 再根据当前供应商控制台或 SDK 错误信息检查配额和权限
 ```
 
 ### Q3: 如何降低 LLM API 的成本？
 
-- 使用更便宜的模型（如 GPT-3.5 而不是 GPT-4）
+- 按任务难度和失败成本路由模型，并用当前价格卡重新计算
 - 减少 token 数量（缩短 prompt 和 response）
 - 使用缓存和批处理
 - 参考 [第6章 6.5 LLM 系统设计](../06_llm_applications/05_system_design.md) 的成本估算

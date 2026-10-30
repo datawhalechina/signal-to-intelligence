@@ -64,21 +64,21 @@
 ## 本章学习闭环
 
 1. 先根据章节主图为一个云端或端侧多模态服务定义质量、延迟、内存、可靠性和安全目标；
-2. 运行 `cost_calculator.py` 或 `inference_benchmark.py`，得到至少两种配置的可比较结果；
-3. 完成最低实践任务，基于测量结果选择方案并写明收益、代价和适用边界；
+2. 运行 `cost_calculator.py` 或 `inference_benchmark.py`，理解显式假设下的估算；若用于选型，再替换价格卡并在目标硬件上采集实测数据；
+3. 完成最低实践任务，基于明确假设下的估算或目标环境实测选择方案，并写明收益、代价和适用边界；
 4. 为所选方案补充监控指标、告警阈值和回退条件，形成从评估到生产反馈的闭环。
 
 ## 最低实践任务
 
-给一个假设的云端 LLM 服务或端侧多模态系统设定质量、延迟、内存、成本和可靠性目标，使用本章的成本计算或推理基准脚本比较至少两种方案，并写出一个监控与回退条件。完成标准：方案选择必须同时说明保留了什么信息、牺牲了什么，以及失败时如何处理。
+给一个假设的云端 LLM 服务或端侧多模态系统设定质量、延迟、内存、成本和可靠性目标，使用本章的成本计算或推理模拟脚本比较至少两种方案，并写出一个监控与回退条件。完成标准：明确标注输入假设和数据类型，说明保留了什么信息、牺牲了什么，以及失败时如何处理；模拟结果不能写成硬件实测。
 
 ## 代码实验
 
 | 小节 | 脚本 | 内容 |
 |------|------|------|
-| 8.1 | [`quantization_demo.py`](../../code/ch08_llm_engineering/quantization_demo.py) | 模型量化演示 |
-| 8.2 | [`inference_benchmark.py`](../../code/ch08_llm_engineering/inference_benchmark.py) | 推理性能测试 |
-| 8.3 | [`cost_calculator.py`](../../code/ch08_llm_engineering/cost_calculator.py) | 成本计算工具 |
+| 8.1 | [`quantization_demo.py`](../../code/ch08_llm_engineering/quantization_demo.py) | 合成权重上的量化误差、剪枝理论上界与蒸馏示意 |
+| 8.2 | [`inference_benchmark.py`](../../code/ch08_llm_engineering/inference_benchmark.py) | KV cache 公式与延迟/吞吐模拟，不是硬件实测 |
+| 8.3 | [`cost_calculator.py`](../../code/ch08_llm_engineering/cost_calculator.py) | 使用显式示意价格卡的成本算术，可注入真实价格 |
 
 ## 扩展阅读
 

@@ -52,9 +52,9 @@ make run-exp-ch04
 
 ## 最近更新
 
-- 首页 README 已重排，使用方法按在线阅读、Notebook、本地代码、Docker 和 CNB 分流。
-- 章节导航补充了每章主线节数统计，方便快速判断内容体量。
-- 第 0 章、附录 B/C/E 和 Notebook 说明已进一步收口，入口和手册职责更清晰。
+- 建立术语表与统一数学参考，修正跨章节公式、符号和概念边界。
+- 第 6 章明确 Prompt、微调、RAG、Agent 的并列选型关系，第 8 章补齐评估与端侧验收闭环。
+- 代码实验区分示意数据、公式估算和真实测量，并补充对应一致性测试。
 
 ---
 
@@ -90,7 +90,7 @@ make run-exp-ch04
 | [第3章：深度学习快速通道](docs/03_deep_learning_fast/README.md) | 6 | CNN、RNN、Transformer规模化建模 | [1 个扩展](docs/03_deep_learning_fast/README.md#扩展内容) | 已完成 |
 | [第4章：Transformer详解](docs/04_transformer/README.md) | 4 | 自注意力机制 | [3 个扩展](docs/04_transformer/README.md#扩展内容) | 已完成 |
 | [第5章：LLM原理](docs/05_llm_basics/README.md) | 6 | 预训练、缩放律、对齐 | [6 个扩展](docs/05_llm_basics/README.md#扩展内容) | 已完成 |
-| [第6章：LLM应用](docs/06_llm_applications/README.md) | 5 | Prompt → 微调 → RAG → Agent | [4 个扩展](docs/06_llm_applications/README.md#扩展内容) | 已完成 |
+| [第6章：LLM应用](docs/06_llm_applications/README.md) | 5 | Prompt、微调、RAG、Agent 方案选型 | [4 个扩展](docs/06_llm_applications/README.md#扩展内容) | 已完成 |
 | [第7章：多模态LLM](docs/07_multimodal_llm/README.md) | 6 | 从视觉主干到信号—语言对齐 | [2 个扩展](docs/07_multimodal_llm/README.md#扩展内容) | 已完成 |
 | [第8章：LLM工程实践与部署](docs/08_llm_engineering/README.md) | 6 | 云端生产闭环与端侧联合验收 | [2 个扩展](docs/08_llm_engineering/README.md#扩展阅读) | 已完成 |
 

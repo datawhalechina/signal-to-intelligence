@@ -10,8 +10,8 @@
 
 | 阶段 | 做什么 | 主要瓶颈 |
 |------|--------|----------|
-| Prefill | 处理输入 prompt，构建初始 KV cache | 计算量大 |
-| Decode | 每次生成一个新 token | 内存访问和调度 |
+| Prefill | 处理输入 prompt，构建初始 KV cache | 常受矩阵计算、输入长度和排队影响 |
+| Decode | 每次生成一个新 token | 常受权重/KV 读取、批处理和调度影响 |
 
 长 prompt 会让 prefill 变重，长输出会让 decode 持续占用资源。
 
@@ -47,7 +47,7 @@ KV cache 保存历史 token 的 Key/Value，避免每生成一个 token 都重�
 | 动态 batch | 提高吞吐 | 调度更复杂 |
 | 连续批处理 | 适合流式生成 | 需要专门推理框架 |
 
-vLLM、TGI、TensorRT-LLM 等框架的核心价值，就在于更好地管理 batch、KV cache 和显存碎片。
+服务型推理后端通常围绕 batch、KV cache、并行和内存碎片做优化。具体支持范围与收益依赖版本、模型和硬件，应在目标环境中测量。
 
 ---
 
@@ -55,19 +55,24 @@ vLLM、TGI、TensorRT-LLM 等框架的核心价值，就在于更好地管理 ba
 
 标准 attention 需要读写完整注意力矩阵，IO 成本高。Flash Attention 通过分块计算减少显存读写，提高训练和推理效率。
 
-它解决的是 IO 和显存访问问题，不改变 attention 的数学结果。
+它主要解决 IO 和显存访问问题，在相同掩码和注意力定义下计算同一数学算子；由于浮点精度和归约顺序不同，数值结果不要求逐位一致。
 
 ---
 
 ## 优化指标
 
-上线时至少同时看四个指标：
-- 首 token 延迟（TTFT）
-- 每秒生成 token 数（tokens/s）
-- 最大并发
-- 显存占用和 OOM 率
+上线时至少同时看：
+
+- 首 token 延迟（TTFT）：排队、分词和 prefill 后多久开始返回；
+- token 间延迟（TPOT）或生成速率：decode 阶段的交互体验；
+- 端到端延迟：从请求进入到完成，报告 p50/p95/p99；
+- 吞吐：请求/秒与 token/秒，并注明输入和输出 token 是否分开；
+- 并发、队列长度、峰值显存和 OOM 率；
+- 对应配置下的业务质量和错误率。
 
 只优化吞吐可能牺牲交互体验，只优化延迟可能导致 GPU 利用率过低。
+
+本章的 [`inference_benchmark.py`](../../code/ch08_llm_engineering/inference_benchmark.py) 是公式和方向性关系模拟器，输出带有 `simulated_estimate` 标记，不代表任何硬件或推理框架的实测 Benchmark。生产选型需要在固定模型、版本、输入输出分布和并发条件下重新测量。
 
 ---
 

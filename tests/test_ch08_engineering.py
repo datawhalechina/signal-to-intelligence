@@ -21,8 +21,9 @@ class TestCompressionScripts:
         no_sparse_kernel, sparse_kernel = result["pruning"]
 
         assert no_sparse_kernel.needs_sparse_kernel
-        assert no_sparse_kernel.effective_speedup == 1.0
-        assert sparse_kernel.effective_speedup > 1.0
+        assert no_sparse_kernel.illustrative_speedup_upper_bound == 1.0
+        assert sparse_kernel.illustrative_speedup_upper_bound > 1.0
+        assert result["data_kind"] == "synthetic_weights_and_illustrative_quality"
 
 
 class TestInferenceBenchmarkScripts:
@@ -40,6 +41,11 @@ class TestInferenceBenchmarkScripts:
 
         assert benchmark.estimate_kv_cache_mb(long) > benchmark.estimate_kv_cache_mb(short)
 
+        grouped_query = benchmark.InferenceConfig(
+            name="gqa", batch_size=1, prompt_tokens=512, output_tokens=128, kv_heads=8
+        )
+        assert benchmark.estimate_kv_cache_mb(grouped_query) < benchmark.estimate_kv_cache_mb(short)
+
     def test_batching_improves_throughput(self, load_code_module):
         benchmark = load_code_module("code/ch08_llm_engineering/inference_benchmark.py")
         results = benchmark.compare_serving_modes()
@@ -50,6 +56,8 @@ class TestInferenceBenchmarkScripts:
             > by_name["single request"].throughput_tokens_per_sec
         )
         assert by_name["long context"].kv_cache_mb > by_name["single request"].kv_cache_mb
+        assert all(item.data_kind == "simulated_estimate" for item in results)
+        assert all(item.ttft_ms == item.prefill_ms for item in results)
 
 
 class TestCostCalculatorScripts:
@@ -61,11 +69,11 @@ class TestCostCalculatorScripts:
 
         no_cache = costs.estimate_single_model_cost(
             price,
-            costs.TrafficProfile(10_000, 1_000, 200, cache_hit_rate=0.0),
+            costs.TrafficProfile(10_000, 1_000, 200, full_response_cache_hit_rate=0.0),
         )
         cached = costs.estimate_single_model_cost(
             price,
-            costs.TrafficProfile(10_000, 1_000, 200, cache_hit_rate=0.5),
+            costs.TrafficProfile(10_000, 1_000, 200, full_response_cache_hit_rate=0.5),
         )
 
         assert cached.monthly_cost == no_cache.monthly_cost * 0.5
@@ -93,9 +101,8 @@ class TestModelSelection:
         )
 
         candidate_names = {model.name for model in candidates}
-        assert "GPT-3.5 Turbo" in candidate_names
-        assert "Claude 3 Sonnet" in candidate_names
-        assert "GPT-4" not in candidate_names
+        assert candidate_names == {"Illustrative API Small"}
+        assert all(model.source == "teaching assumption" for model in candidates)
 
     def test_model_selector_requires_finetuning(self, load_code_module):
         engineering = load_code_module("code/ch08_llm_engineering/llm_engineering_demo.py")
@@ -114,8 +121,8 @@ class TestCostOptimization:
         engineering = load_code_module("code/ch08_llm_engineering/llm_engineering_demo.py")
         analyzer = engineering.CostAnalyzer(engineering.ModelSelector())
 
-        small = analyzer.estimate_cost("gpt-3.5-turbo", 100, 1_000, 200)
-        large = analyzer.estimate_cost("gpt-3.5-turbo", 200, 1_000, 200)
+        small = analyzer.estimate_cost("api-small", 100, 1_000, 200)
+        large = analyzer.estimate_cost("api-small", 200, 1_000, 200)
 
         assert small.daily_cost > 0
         assert large.daily_cost == 2 * small.daily_cost

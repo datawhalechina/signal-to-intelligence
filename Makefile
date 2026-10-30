@@ -29,7 +29,7 @@ help:
 	@echo "  make run-exp-ch05     第5章：全部离线实验（8 个）"
 	@echo "  make run-exp-ch06     第6章：Prompt、微调、RAG、Agent 与系统选型（5 个）"
 	@echo "  make run-exp-ch07     第7章：ViT、CLIP、高分辨率与评测图（8 个）"
-	@echo "  make run-exp-ch08     第8章：LLM 工程实践（标准库）"
+	@echo "  make run-exp-ch08     第8章：压缩、推理、成本与工程配置模拟（4 个）"
 	@echo "  make run-project-signal-detection  项目：信号检测方法对照与失败案例"
 	@echo "  make run-project-vision-detection  项目：YOLO/DETR 对比（需 ANNOTATIONS、IMAGES_DIR）"
 	@echo "  make run-all-exp      运行所有离线实验"
@@ -137,6 +137,9 @@ run-exp-ch07-heavy:
 
 # 第8章
 run-exp-ch08:
+	python code/ch08_llm_engineering/quantization_demo.py
+	python code/ch08_llm_engineering/inference_benchmark.py
+	python code/ch08_llm_engineering/cost_calculator.py
 	python code/ch08_llm_engineering/llm_engineering_demo.py
 
 run-project-signal-detection:

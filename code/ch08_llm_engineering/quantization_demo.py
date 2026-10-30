@@ -25,8 +25,8 @@ class QuantizationResult:
 class PruningResult:
     sparsity: float
     remaining_ratio: float
-    theoretical_memory_kb: float
-    effective_speedup: float
+    nonzero_value_storage_kb: float
+    illustrative_speedup_upper_bound: float
     needs_sparse_kernel: bool
 
 
@@ -64,14 +64,15 @@ def magnitude_prune(
     mask = np.abs(weights) > threshold
     remaining_ratio = float(np.mean(mask))
 
-    # Unstructured sparsity saves storage only if the runtime has sparse kernels.
-    effective_speedup = 1 / remaining_ratio if sparse_kernel_supported else 1.0
+    # This is an idealized compute upper bound, not a latency measurement.
+    speedup_upper_bound = 1 / remaining_ratio if sparse_kernel_supported else 1.0
 
     return PruningResult(
         sparsity=sparsity,
         remaining_ratio=remaining_ratio,
-        theoretical_memory_kb=weights.size * remaining_ratio * 2 / 1024,
-        effective_speedup=effective_speedup,
+        # Excludes indices and sparse-format metadata; not an actual file size.
+        nonzero_value_storage_kb=weights.size * remaining_ratio * weights.itemsize / 1024,
+        illustrative_speedup_upper_bound=speedup_upper_bound,
         needs_sparse_kernel=not sparse_kernel_supported,
     )
 
@@ -117,6 +118,7 @@ def run_compression_comparison(seed: int = 7) -> Dict[str, object]:
     )
 
     return {
+        "data_kind": "synthetic_weights_and_illustrative_quality",
         "baseline_memory_kb": weights.size * 4 / 1024,
         "quantization": quantization,
         "pruning": pruning,
@@ -141,10 +143,11 @@ def main() -> None:
         support = "with sparse kernel" if not item.needs_sparse_kernel else "no sparse kernel"
         print(
             f"  sparsity={item.sparsity:.0%} remaining={item.remaining_ratio:.0%} "
-            f"speedup={item.effective_speedup:.2f}x ({support})"
+            f"illustrative_upper_bound={item.illustrative_speedup_upper_bound:.2f}x "
+            f"({support}; not measured latency)"
         )
 
-    print("\nDistillation:")
+    print("\nDistillation (illustrative quality scores, not a model evaluation):")
     for key, value in result["distillation"].items():
         print(f"  {key}: {value:.2%}")
 
